@@ -1,0 +1,438 @@
+import React, { useState, useMemo } from 'react';
+import { DollarSign, TrendingUp, TrendingDown, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+
+const CashFlowDashboard = () => {
+  const industryBenchmarks = {
+    'SaaS Company': {
+      cogs: 15,
+      cogsBreakdown: { 'Hosting': 8, 'APIs': 4, 'Payment': 2, 'Onboarding': 1 },
+      operations: 50,
+      operationsBreakdown: { 'Engineering': 20, 'Marketing': 15, 'Support': 8, 'Admin': 4, 'Software': 2, 'Legal': 1 },
+      netProfit: 25,
+      taxes: 10
+    },
+    'Content Creators': {
+      cogs: 20,
+      cogsBreakdown: { 'Equipment': 8, 'Freelancers': 7, 'Media': 3, 'Props': 2 },
+      operations: 40,
+      operationsBreakdown: { 'Marketing': 15, 'Software': 8, 'Utilities': 3, 'Accounting': 2, 'Insurance': 2, 'Education': 5, 'Office': 5 },
+      netProfit: 30,
+      taxes: 10
+    },
+    'Restaurants': {
+      cogs: 30,
+      cogsBreakdown: { 'Food': 25, 'Beverages': 5 },
+      operations: 50,
+      operationsBreakdown: { 'Labor': 30, 'Rent': 10, 'Utilities': 4, 'Marketing': 2, 'Insurance': 2, 'Maintenance': 2 },
+      netProfit: 12,
+      taxes: 8
+    },
+    'Consultants': {
+      cogs: 15,
+      cogsBreakdown: { 'Subcontractors': 8, 'Research': 4, 'Travel': 3 },
+      operations: 45,
+      operationsBreakdown: { 'Marketing': 15, 'Development': 8, 'Office': 5, 'Software': 7, 'Insurance': 3, 'Legal': 4, 'Admin': 3 },
+      netProfit: 30,
+      taxes: 10
+    },
+    'Retail': {
+      cogs: 60,
+      cogsBreakdown: { 'Inventory': 50, 'Shipping': 7, 'Packaging': 3 },
+      operations: 25,
+      operationsBreakdown: { 'Labor': 12, 'Rent': 6, 'Marketing': 3, 'POS': 1, 'Utilities': 2, 'Accounting': 1 },
+      netProfit: 12,
+      taxes: 3
+    },
+    'Production Companies': {
+      cogs: 45,
+      cogsBreakdown: { 'Equipment': 15, 'Talent': 20, 'Locations': 5, 'PostProd': 5 },
+      operations: 35,
+      operationsBreakdown: { 'Salaries': 15, 'Marketing': 8, 'Rent': 4, 'Insurance': 3, 'Software': 2, 'Services': 3 },
+      netProfit: 15,
+      taxes: 5
+    },
+    'Actors/Actress': {
+      cogs: 25,
+      cogsBreakdown: { 'AgentFees': 15, 'Training': 5, 'Headshots': 3, 'UnionDues': 2 },
+      operations: 45,
+      operationsBreakdown: { 'Assistant': 10, 'Travel': 8, 'Wardrobe': 7, 'Publicity': 8, 'Legal': 5, 'Office': 4, 'Tech': 3 },
+      netProfit: 22,
+      taxes: 8
+    },
+    'Construction': {
+      cogs: 55,
+      cogsBreakdown: { 'Materials': 30, 'Subcontractors': 15, 'Equipment': 7, 'Permits': 3 },
+      operations: 30,
+      operationsBreakdown: { 'Labor': 15, 'Insurance': 5, 'Vehicles': 3, 'Marketing': 2, 'Office': 3, 'Legal': 2 },
+      netProfit: 10,
+      taxes: 5
+    },
+    'PR Agency': {
+      cogs: 30,
+      cogsBreakdown: { 'Freelancers': 10, 'MediaTools': 8, 'Events': 7, 'Distribution': 5 },
+      operations: 45,
+      operationsBreakdown: { 'Salaries': 25, 'Rent': 6, 'Marketing': 5, 'Software': 4, 'Development': 3, 'Legal': 2 },
+      netProfit: 18,
+      taxes: 7
+    },
+    'Real Estate Investor': {
+      cogs: 40,
+      cogsBreakdown: { 'Acquisition': 20, 'Renovations': 12, 'Contractors': 5, 'Staging': 3 },
+      operations: 35,
+      operationsBreakdown: { 'Management': 10, 'Marketing': 8, 'Insurance': 5, 'Legal': 4, 'Utilities': 4, 'Software': 2, 'Admin': 2 },
+      netProfit: 20,
+      taxes: 5
+    },
+    'Professional Services': {
+      cogs: 25,
+      cogsBreakdown: { 'Subcontractors': 12, 'Software': 8, 'Licenses': 3, 'Materials': 2 },
+      operations: 50,
+      operationsBreakdown: { 'Salaries': 28, 'Rent': 8, 'Marketing': 6, 'Insurance': 3, 'Legal': 2, 'Tech': 3 },
+      netProfit: 18,
+      taxes: 7
+    },
+    'Online Course Creators': {
+      cogs: 20,
+      cogsBreakdown: { 'PlatformFees': 8, 'Production': 6, 'Editors': 4, 'Materials': 2 },
+      operations: 35,
+      operationsBreakdown: { 'Marketing': 18, 'Software': 6, 'Support': 4, 'Accounting': 2, 'Hosting': 2, 'Admin': 3 },
+      netProfit: 35,
+      taxes: 10
+    },
+    'Non Profit': {
+      cogs: 65,
+      cogsBreakdown: { 'Programs': 45, 'DirectAid': 12, 'Materials': 5, 'Volunteers': 3 },
+      operations: 25,
+      operationsBreakdown: { 'Salaries': 12, 'Fundraising': 5, 'Rent': 3, 'Marketing': 2, 'Legal': 2, 'Admin': 1 },
+      netProfit: 10,
+      taxes: 0
+    },
+    'Adult Care Facilities': {
+      cogs: 60,
+      cogsBreakdown: { 'MedicalStaff': 35, 'Supplies': 15, 'Food': 7, 'Medications': 3 },
+      operations: 28,
+      operationsBreakdown: { 'AdminStaff': 10, 'Maintenance': 6, 'Insurance': 5, 'Marketing': 2, 'Utilities': 3, 'Legal': 2 },
+      netProfit: 8,
+      taxes: 4
+    },
+    'Doctors': {
+      cogs: 35,
+      cogsBreakdown: { 'Supplies': 15, 'LabTests': 10, 'Equipment': 7, 'Pharma': 3 },
+      operations: 45,
+      operationsBreakdown: { 'Staff': 22, 'Rent': 8, 'Malpractice': 6, 'Marketing': 3, 'Software': 3, 'Legal': 2, 'Utilities': 1 },
+      netProfit: 15,
+      taxes: 5
+    },
+    'MLM': {
+      cogs: 35,
+      cogsBreakdown: { 'Inventory': 25, 'Kits': 5, 'Samples': 3, 'Shipping': 2 },
+      operations: 40,
+      operationsBreakdown: { 'Marketing': 15, 'Training': 10, 'Travel': 6, 'Tech': 4, 'Supplies': 2, 'Accounting': 3 },
+      netProfit: 20,
+      taxes: 5
+    },
+    'Accounting & Finance': {
+      cogs: 20,
+      cogsBreakdown: { 'Software': 12, 'Development': 5, 'Research': 3 },
+      operations: 50,
+      operationsBreakdown: { 'Salaries': 30, 'Rent': 7, 'Marketing': 5, 'Insurance': 3, 'Tech': 3, 'Legal': 2 },
+      netProfit: 22,
+      taxes: 8
+    }
+  };
+
+  const [selectedIndustry, setSelectedIndustry] = useState('SaaS Company');
+  const [monthlyOperations, setMonthlyOperations] = useState('');
+  const [viewMode, setViewMode] = useState('summary');
+  const [expandedSections, setExpandedSections] = useState({ cogs: true, operations: true });
+  const [actualRevenue, setActualRevenue] = useState('');
+  const [actualCOGSItems, setActualCOGSItems] = useState({});
+  const [actualOpsItems, setActualOpsItems] = useState({});
+
+  const benchmarks = industryBenchmarks[selectedIndustry];
+
+  const calculations = useMemo(() => {
+    const ops = parseFloat(monthlyOperations) || 0;
+    const requiredRevenue = ops > 0 ? ops / (benchmarks.operations / 100) : 0;
+    
+    const targetCOGS = requiredRevenue * (benchmarks.cogs / 100);
+    const targetOperations = requiredRevenue * (benchmarks.operations / 100);
+    const targetNetProfit = requiredRevenue * (benchmarks.netProfit / 100);
+    
+    const targetCOGSBreakdown = {};
+    Object.entries(benchmarks.cogsBreakdown).forEach(([item, percentage]) => {
+      targetCOGSBreakdown[item] = requiredRevenue * (percentage / 100);
+    });
+
+    const targetOpsBreakdown = {};
+    Object.entries(benchmarks.operationsBreakdown).forEach(([item, percentage]) => {
+      targetOpsBreakdown[item] = requiredRevenue * (percentage / 100);
+    });
+    
+    const actRev = parseFloat(actualRevenue) || 0;
+    const actCOGS = Object.values(actualCOGSItems).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+    const actOps = Object.values(actualOpsItems).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+    
+    const actNetProfit = actRev - actCOGS - actOps;
+    const actTaxes = actNetProfit > 0 ? actNetProfit * 0.25 : 0;
+    const actNetAfterTax = actNetProfit - actTaxes;
+    
+    const actCOGSPct = actRev > 0 ? (actCOGS / actRev) * 100 : 0;
+    const actOpsPct = actRev > 0 ? (actOps / actRev) * 100 : 0;
+    const actNetProfitPct = actRev > 0 ? (actNetProfit / actRev) * 100 : 0;
+    
+    const cogsItemVariances = {};
+    Object.entries(benchmarks.cogsBreakdown).forEach(([item, percentage]) => {
+      const actual = parseFloat(actualCOGSItems[item]) || 0;
+      const actualPct = actRev > 0 ? (actual / actRev) * 100 : 0;
+      cogsItemVariances[item] = { actualPct, percentageVariance: actualPct - percentage };
+    });
+
+    const opsItemVariances = {};
+    Object.entries(benchmarks.operationsBreakdown).forEach(([item, percentage]) => {
+      const actual = parseFloat(actualOpsItems[item]) || 0;
+      const actualPct = actRev > 0 ? (actual / actRev) * 100 : 0;
+      opsItemVariances[item] = { actualPct, percentageVariance: actualPct - percentage };
+    });
+    
+    const revenueVariance = actRev - requiredRevenue;
+    const cogsVariance = actCOGSPct - benchmarks.cogs;
+    const opsVariance = actOpsPct - benchmarks.operations;
+    const profitVariance = actNetProfitPct - benchmarks.netProfit;
+    
+    return {
+      requiredRevenue, targetCOGS, targetOperations, targetNetProfit,
+      targetCOGSBreakdown, targetOpsBreakdown,
+      actRev, actCOGS, actOps, actNetProfit, actTaxes, actNetAfterTax,
+      actCOGSPct, actOpsPct, actNetProfitPct,
+      revenueVariance, cogsVariance, opsVariance, profitVariance,
+      cogsItemVariances, opsItemVariances
+    };
+  }, [monthlyOperations, actualRevenue, actualCOGSItems, actualOpsItems, benchmarks]);
+
+  const formatCurrency = (num) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(num);
+  };
+
+  const VarianceIndicator = ({ variance, isPercentage, inverse }) => {
+    const isGood = inverse ? variance < 0 : variance > 0;
+    const Icon = isGood ? TrendingUp : TrendingDown;
+    const color = isGood ? 'text-green-600' : 'text-red-600';
+    return (
+      <div className={`flex items-center gap-1 ${color} text-sm font-semibold`}>
+        <Icon size={16} />
+        <span>{variance > 0 ? '+' : ''}{isPercentage ? variance.toFixed(1) + '%' : formatCurrency(Math.abs(variance))}</span>
+      </div>
+    );
+  };
+
+  return (
+    <div className="w-full min-h-screen bg-slate-100">
+      <div className="w-full bg-gradient-to-r from-slate-800 to-slate-900 text-white py-8 px-6 shadow-xl">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-3 tracking-wide">Five Fold Group</h1>
+          <p className="text-sm md:text-base tracking-widest uppercase text-slate-300">Your Success Is Our Priority</p>
+        </div>
+      </div>
+
+      <div className="w-full max-w-7xl mx-auto p-6">
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div className="flex items-center gap-3">
+              <DollarSign className="text-slate-800" size={32} />
+              <h2 className="text-3xl font-bold text-slate-800">Cash Flow Dashboard</h2>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setViewMode('summary')} className={`px-4 py-2 rounded-lg font-semibold ${viewMode === 'summary' ? 'bg-slate-800 text-white' : 'bg-slate-200 text-slate-700'}`}>Summary</button>
+              <button onClick={() => setViewMode('detailed')} className={`px-4 py-2 rounded-lg font-semibold ${viewMode === 'detailed' ? 'bg-slate-800 text-white' : 'bg-slate-200 text-slate-700'}`}>Detailed</button>
+            </div>
+          </div>
+
+          <div className="mb-8 p-6 bg-slate-100 rounded-lg border-2 border-slate-300">
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Select Your Industry</label>
+            <select value={selectedIndustry} onChange={(e) => setSelectedIndustry(e.target.value)} className="w-full p-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800">
+              {Object.keys(industryBenchmarks).map(industry => (<option key={industry} value={industry}>{industry}</option>))}
+            </select>
+          </div>
+
+          <div className="mb-8 p-6 bg-amber-50 rounded-lg border border-amber-200">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <AlertCircle className="text-amber-600" size={24} />
+              Step 1: Breakeven Revenue
+            </h3>
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Monthly Operational Costs</label>
+              <input type="number" value={monthlyOperations} onChange={(e) => setMonthlyOperations(e.target.value)} placeholder="Enter costs" className="w-full p-3 border rounded-lg" />
+            </div>
+            {calculations.requiredRevenue > 0 && (
+              <div className="p-4 bg-white rounded-lg border-2 border-amber-400">
+                <div className="text-sm text-slate-600 mb-1">Required Monthly Revenue</div>
+                <div className="text-3xl font-bold text-amber-600">{formatCurrency(calculations.requiredRevenue)}</div>
+              </div>
+            )}
+          </div>
+
+          {viewMode === 'summary' ? (
+            <>
+              <div className="mb-8 p-6 bg-slate-50 rounded-lg">
+                <h3 className="text-xl font-bold mb-4">Industry Standards</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center p-4 bg-white rounded-lg"><div className="text-2xl font-bold text-blue-600">{benchmarks.cogs}%</div><div className="text-sm">COGS</div></div>
+                  <div className="text-center p-4 bg-white rounded-lg"><div className="text-2xl font-bold text-purple-600">{benchmarks.operations}%</div><div className="text-sm">Operations</div></div>
+                  <div className="text-center p-4 bg-white rounded-lg"><div className="text-2xl font-bold text-green-600">{benchmarks.netProfit}%</div><div className="text-sm">Net Profit</div></div>
+                  <div className="text-center p-4 bg-white rounded-lg"><div className="text-2xl font-bold text-orange-600">{benchmarks.taxes}%</div><div className="text-sm">Taxes</div></div>
+                </div>
+              </div>
+
+              {calculations.requiredRevenue > 0 && (
+                <>
+                  <div className="mb-8 p-6 bg-green-50 rounded-lg">
+                    <h3 className="text-xl font-bold mb-4">Target Breakdown</h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-white rounded-lg"><div className="text-sm text-slate-600">Revenue</div><div className="text-2xl font-bold">{formatCurrency(calculations.requiredRevenue)}</div></div>
+                      <div className="p-4 bg-white rounded-lg"><div className="text-sm text-slate-600">COGS</div><div className="text-2xl font-bold text-blue-600">{formatCurrency(calculations.targetCOGS)}</div></div>
+                      <div className="p-4 bg-white rounded-lg"><div className="text-sm text-slate-600">Operations</div><div className="text-2xl font-bold text-purple-600">{formatCurrency(calculations.targetOperations)}</div></div>
+                      <div className="p-4 bg-white rounded-lg"><div className="text-sm text-slate-600">Net Profit</div><div className="text-2xl font-bold text-green-600">{formatCurrency(calculations.targetNetProfit)}</div></div>
+                    </div>
+                  </div>
+
+                  <div className="mb-8 p-6 bg-slate-50 rounded-lg">
+                    <h3 className="text-xl font-bold mb-4">Step 2: Actual Revenue</h3>
+                    <input type="number" value={actualRevenue} onChange={(e) => setActualRevenue(e.target.value)} placeholder="Enter revenue" className="w-full p-3 border rounded-lg" />
+                  </div>
+
+                  {calculations.actRev > 0 && (
+                    <div className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+                      <h3 className="text-xl font-bold mb-4">Performance</h3>
+                      <div className="grid md:grid-cols-2 gap-6 mb-6">
+                        <div className="p-5 bg-white rounded-lg shadow">
+                          <div className="flex justify-between mb-2">
+                            <div><div className="text-sm text-slate-600">Revenue</div><div className="text-2xl font-bold">{formatCurrency(calculations.actRev)}</div></div>
+                            <VarianceIndicator variance={calculations.revenueVariance} />
+                          </div>
+                        </div>
+                        <div className="p-5 bg-white rounded-lg shadow">
+                          <div className="flex justify-between mb-2">
+                            <div><div className="text-sm text-slate-600">Net Profit</div><div className="text-2xl font-bold text-green-600">{calculations.actNetProfitPct.toFixed(1)}%</div></div>
+                            <VarianceIndicator variance={calculations.profitVariance} isPercentage={true} />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-5 bg-green-100 rounded-lg"><div className="text-sm text-slate-600 mb-1">Net After Tax</div><div className="text-3xl font-bold text-green-700">{formatCurrency(calculations.actNetAfterTax)}</div></div>
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              {calculations.requiredRevenue > 0 && (
+                <div className="space-y-6">
+                  <h3 className="text-xl font-bold">Step 2: Detailed Budget</h3>
+                  
+                  <div className="p-6 bg-green-50 rounded-lg">
+                    <label className="block text-sm font-semibold mb-2">Actual Revenue</label>
+                    <input type="number" value={actualRevenue} onChange={(e) => setActualRevenue(e.target.value)} placeholder="Enter" className="w-full p-3 border rounded-lg mb-3" />
+                    <div className="text-sm text-slate-600">Target: {formatCurrency(calculations.requiredRevenue)}</div>
+                  </div>
+
+                  <div className="p-6 bg-blue-50 rounded-lg">
+                    <button onClick={() => setExpandedSections(prev => ({ ...prev, cogs: !prev.cogs }))} className="w-full flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-bold">COGS - {benchmarks.cogs}% ({formatCurrency(calculations.targetCOGS)})</h4>
+                      {expandedSections.cogs ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                    </button>
+                    {expandedSections.cogs && (
+                      <div className="space-y-3">
+                        {Object.entries(benchmarks.cogsBreakdown).map(([item, pct]) => (
+                          <div key={item} className="p-4 bg-white rounded-lg">
+                            <div className="flex justify-between mb-2">
+                              <span className="font-semibold">{item}</span>
+                              <span className="text-blue-600 font-bold">{pct}%</span>
+                            </div>
+                            <div className="text-sm text-slate-600 mb-2">Target: {formatCurrency(calculations.targetCOGSBreakdown[item])}</div>
+                            <input type="number" placeholder="Actual" value={actualCOGSItems[item] || ''} onChange={(e) => setActualCOGSItems(prev => ({ ...prev, [item]: e.target.value }))} className="w-full p-2 border rounded" />
+                            {actualCOGSItems[item] && calculations.actRev > 0 && (
+                              <div className="mt-2 flex justify-between text-sm">
+                                <span>Actual: {calculations.cogsItemVariances[item].actualPct.toFixed(1)}%</span>
+                                <VarianceIndicator variance={calculations.cogsItemVariances[item].percentageVariance} isPercentage={true} inverse={true} />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                        <div className="p-4 bg-blue-100 rounded-lg border-2">
+                          <div className="flex justify-between"><span className="font-bold">Total</span><span className="text-2xl font-bold text-blue-700">{formatCurrency(calculations.actCOGS)}</span></div>
+                          {calculations.actRev > 0 && calculations.actCOGS > 0 && (
+                            <div className="mt-2 flex justify-between"><span className="text-sm">{calculations.actCOGSPct.toFixed(1)}%</span><VarianceIndicator variance={calculations.cogsVariance} isPercentage={true} inverse={true} /></div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-6 bg-purple-50 rounded-lg">
+                    <button onClick={() => setExpandedSections(prev => ({ ...prev, operations: !prev.operations }))} className="w-full flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-bold">Operations - {benchmarks.operations}% ({formatCurrency(calculations.targetOperations)})</h4>
+                      {expandedSections.operations ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                    </button>
+                    {expandedSections.operations && (
+                      <div className="space-y-3">
+                        {Object.entries(benchmarks.operationsBreakdown).map(([item, pct]) => (
+                          <div key={item} className="p-4 bg-white rounded-lg">
+                            <div className="flex justify-between mb-2">
+                              <span className="font-semibold">{item}</span>
+                              <span className="text-purple-600 font-bold">{pct}%</span>
+                            </div>
+                            <div className="text-sm text-slate-600 mb-2">Target: {formatCurrency(calculations.targetOpsBreakdown[item])}</div>
+                            <input type="number" placeholder="Actual" value={actualOpsItems[item] || ''} onChange={(e) => setActualOpsItems(prev => ({ ...prev, [item]: e.target.value }))} className="w-full p-2 border rounded" />
+                            {actualOpsItems[item] && calculations.actRev > 0 && (
+                              <div className="mt-2 flex justify-between text-sm">
+                                <span>Actual: {calculations.opsItemVariances[item].actualPct.toFixed(1)}%</span>
+                                <VarianceIndicator variance={calculations.opsItemVariances[item].percentageVariance} isPercentage={true} inverse={true} />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                        <div className="p-4 bg-purple-100 rounded-lg border-2">
+                          <div className="flex justify-between"><span className="font-bold">Total</span><span className="text-2xl font-bold text-purple-700">{formatCurrency(calculations.actOps)}</span></div>
+                          {calculations.actRev > 0 && calculations.actOps > 0 && (
+                            <div className="mt-2 flex justify-between"><span className="text-sm">{calculations.actOpsPct.toFixed(1)}%</span><VarianceIndicator variance={calculations.opsVariance} isPercentage={true} inverse={true} /></div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {calculations.actRev > 0 && (calculations.actCOGS > 0 || calculations.actOps > 0) && (
+                    <div className="p-6 bg-green-50 rounded-lg border-2 border-green-300">
+                      <h4 className="text-xl font-bold mb-4">Summary</h4>
+                      <div className="grid md:grid-cols-2 gap-4 mb-4">
+                        <div className="p-4 bg-white rounded-lg"><div className="text-sm">Revenue</div><div className="text-2xl font-bold">{formatCurrency(calculations.actRev)}</div></div>
+                        <div className="p-4 bg-white rounded-lg"><div className="text-sm">COGS</div><div className="text-2xl font-bold text-blue-600">-{formatCurrency(calculations.actCOGS)}</div></div>
+                        <div className="p-4 bg-white rounded-lg"><div className="text-sm">Operations</div><div className="text-2xl font-bold text-purple-600">-{formatCurrency(calculations.actOps)}</div></div>
+                        <div className="p-4 bg-white rounded-lg"><div className="text-sm">Net Profit</div><div className="text-2xl font-bold text-green-600">{formatCurrency(calculations.actNetProfit)}</div><div className="text-sm text-slate-500 mt-1">{calculations.actNetProfitPct.toFixed(1)}%</div></div>
+                      </div>
+                      <div className="p-5 bg-green-100 rounded-lg border-2 border-green-400">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <div className="text-sm text-slate-600">Taxes (25%)</div>
+                            <div className="text-lg font-semibold text-slate-700">-{formatCurrency(calculations.actTaxes)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm text-slate-600 mb-1">Net After Tax</div>
+                            <div className="text-3xl font-bold text-green-700">{formatCurrency(calculations.actNetAfterTax)}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CashFlowDashboard;
