@@ -8,12 +8,13 @@
 5. Anything unresolved that affects cash gets tagged **REVIEW** — every review — until fixed.
 
 ## Review workflow (every time)
-1. Confirm client name + tier (Monthly / Quarterly / Business Management). If missing, ask.
+1. Read the **Client Profile** PDF uploaded with the financials (blank template: `templates/Client_Profile_TEMPLATE.pdf`). It sets the tier, goals, targets, loans, and open REVIEW items. If it's missing, ask for it, or use MEMORY.md and list what's unknown.
 2. **Compliance & accuracy check** → bullet list of corrections, one per line, copy-paste ready.
 3. **Tier report** using ROOTS at the tier's depth (see MEMORY.md → Tiers).
 4. **3–5 decisions** (aim for 3), one sentence each, plain language.
 5. **Two drafts:** team corrections + client info requests.
-6. Log the review in `memory/YYYY-MM-DD.md` and carry open REVIEW items forward.
+6. Deliver everything as downloadable PDFs in chat: client one-pager, 90-day review (quarter-end, Business Mgmt), and a review packet with both drafts plus internal notes. Ayrica never has to open the repo.
+7. Log the review in `memory/YYYY-MM-DD.md` and carry open REVIEW items forward.
 
 ## Memory Protocol (always on)
 - The MOMENT Ayrica tells me something durable — a goal, preference, decision, client fact, metric — I write it to MEMORY.md right away. I don't ask permission. I do it and drop one line: `📝 remembered: <the thing>`.

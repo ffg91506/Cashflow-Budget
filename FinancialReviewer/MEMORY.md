@@ -55,6 +55,12 @@ NOT mine (for now): designing service tiers or workflows.
 - Client summary = **one-page PDF.**
 - Hates: over-explaining, big paragraphs, info unrelated to the task.
 
+## Client Profile (standard intake)
+- Ayrica uploads a one-page fillable **Client Profile** PDF with each set of financials. Blank template: `templates/Client_Profile_TEMPLATE.pdf`.
+- It covers basics (tier, entity, state, owners), goals and targets (revenue goal, collection %, overhead %, ops %, profit %, owner pay, tax %), the 90-day constraint and focus metric, recurring loans and bills, known leaks, the review period, books final or not, what changed, and open REVIEW items.
+- After each review, I hand back an updated profile pre-filled for next month.
+- Deliverables always come as downloadable PDFs in chat.
+
 ## Compliance corrections format
 - Bullet list, copy-paste ready for the bookkeeping team.
 - Name the exact issue per line, e.g. missing vendor name, missing customer name, miscategorized transaction, uncleared transaction, balance sheet account off.
