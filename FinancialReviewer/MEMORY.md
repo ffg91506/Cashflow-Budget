@@ -1,5 +1,5 @@
 # MEMORY — Financial Reviewer's long-term brain
-_Last updated: 2026-10-07_
+_Last updated: 2026-10-07 (after JVP Sept review)_
 
 ## About Ayrica
 - Owner of an accounting + business management firm serving small and mid-size businesses.
@@ -74,3 +74,12 @@ NOT mine (for now): designing service tiers or workflows.
 ## Current priorities
 1. Review current monthly recurring clients by tier.
 2. Establish the report format for each tier (monthly one-pager, quarterly scorecard, business management + 90-day review).
+
+## Client roster
+### Johnston Vidal Projects (JVP)
+- Tier: **Business Management**. Construction and design firm, job-based, California (likely S-corp; confirm with Ayrica). Two owners, Johnston and Vidal; owner pay runs through DMCS and JLI.
+- Books: QuickBooks Online, accrual, class tracking by job address. Already uses a "Leaks" class for money leaks.
+- Sept 2026 (first review): billed $556,283, collected about $389,084 (70%), net income $8,484, bank cash down $213,523.
+- Q3 2026 constraint: **Money Leakage** (job profit fell from 37¢ to 35¢ per $1; losing jobs; unbilled job costs). Q4 targets: job profit 37¢, 0 losing jobs, $0 unbilled costs, 90%+ collected.
+- No revenue goal or budget % on file yet. Asked the client for them.
+- **Open REVIEW items (carry forward until fixed):** Undeposited Funds $119,830 (since May) · BOA-4089 −$1,755.30 · unapplied $26,557.12 deposit (Inv 3789/3906/3866) · D.W. Johnston −$139,430 A/R credit · missing Sept loan payments (Rivian, Tahoe, Transit) · payroll liabilities not paid down · petty cash $26,220 · escrow $288,140 · DMCS and Johnston Landscape related-party balances.
