@@ -61,6 +61,17 @@ NOT mine (for now): designing service tiers or workflows.
 - After each review, I hand back an updated profile pre-filled for next month.
 - Deliverables always come as downloadable PDFs in chat.
 
+## Deliverable format (set by Ayrica 2026-10-07)
+- Deliver as **Word documents (.docx)** so Ayrica can drop them into Google Docs. Not PDF.
+- Each review comes with the client's **company budget + overview** (ROOTS budget workbook). The ROOTS summary must compare actuals to that budget and its metrics, not just to averages.
+- **REVIEW (affects cash)** section is split into these subsections, in this order:
+  1. Balance Sheet General Corrections
+  2. Accounts Receivable Corrections
+  3. Payroll Corrections
+  4. Payments Missing
+  5. End of Year Corrections (depreciation; splitting loan payments into principal and interest)
+- **Bookkeeping Corrections** are split into: Errors & Incorrect Entries, then Job Costing Entries, then End of Year Entries (always last).
+
 ## Compliance corrections format
 - Bullet list, copy-paste ready for the bookkeeping team.
 - Name the exact issue per line, e.g. missing vendor name, missing customer name, miscategorized transaction, uncleared transaction, balance sheet account off.
@@ -86,6 +97,7 @@ NOT mine (for now): designing service tiers or workflows.
 - Tier: **Business Management**. Construction and design firm, job-based, California (likely S-corp; confirm with Ayrica). Two owners, Johnston and Vidal; owner pay runs through DMCS and JLI.
 - Books: QuickBooks Online, accrual, class tracking by job address. Already uses a "Leaks" class for money leaks.
 - Sept 2026 (first review): billed $556,283, collected about $389,084 (70%), net income $8,484, bank cash down $213,523.
-- Q3 2026 constraint: **Money Leakage** (job profit fell from 37¢ to 35¢ per $1; losing jobs; unbilled job costs). Q4 targets: job profit 37¢, 0 losing jobs, $0 unbilled costs, 90%+ collected.
-- No revenue goal or budget % on file yet. Asked the client for them.
+- **Budget (JVP_ROOTS_Budget_2025.xlsx, cash basis; 2025 actuals used as 2026 targets):** cash collected $728,348/mo · breakeven $494,945/mo (overhead + debt only) · Overhead fixed $275,702/mo (37.85%; includes ALL crew labor) · Project costs (COGS excl. crew labor) 40.15% of cash collected · Operations (fuel, truck repairs, legal) 2.13% · Debt $10,000/mo · Entity taxes $2,577/mo · Reinvested (marketing, travel, meals, brand) $13,241/mo · Owner pay (wages + DMCS + Johnston Landscapes) $98,752/mo · Cash kept target $20,887/mo (2.87%) · Leakage (penalties, bad debt, fraud) target $0.
+- Sept 2026 vs budget: cash collected 53% of budget, $105,861 under breakeven · overhead $262,208 (on budget) · project costs 44¢ per $1 (over) · ops 3.5¢ (over) · reinvested $19,083 (travel $6,339 vs $2,833) · owner pay $95,483 (on budget) · cash kept −$177,550.
+- Q3 2026 constraint: **Leads** (revised after budget: costs on or under budget, cash collected 74% of budget, billing −18% vs Q2, marketing 58% of budget). Money Leakage is second. Confirm with lead count and win rate. Q4 target: cash collected above $600K/mo by December.
 - **Open REVIEW items (carry forward until fixed):** Undeposited Funds $119,830 (since May) · BOA-4089 −$1,755.30 · unapplied $26,557.12 deposit (Inv 3789/3906/3866) · D.W. Johnston −$139,430 A/R credit · missing Sept loan payments (Rivian, Tahoe, Transit) · payroll liabilities not paid down · petty cash $26,220 · escrow $288,140 · DMCS and Johnston Landscape related-party balances.
