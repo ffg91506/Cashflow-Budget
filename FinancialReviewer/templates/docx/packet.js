@@ -109,11 +109,12 @@ const c = [
     '**The constraint call changed.** With the budget, costs were on or under budget for Q3. The gap is cash collected: 74% of budget, with billing down 18%. That points to Leads, not Money Leakage. Money Leakage is now second.',
     '**Budget mapping:** I used the 2025 ROOTS budget as the 2026 target. Crew labor counts as Overhead. D&O and property insurance were added to Overhead. Owner pay includes draws and the $3,500 personal donation.',
     '**Cash vs. recorded costs:** the budget is cash-based. I used cash collected as the base, but costs are what was recorded (accrual). A/P rose $80,046 in September, so some costs aren\'t paid yet.',
-    '**Breakeven:** the budget\'s $494,945 breakeven covers overhead and debt only. It does not cover owner pay. Q3 cleared breakeven by $141,521 but did not cover owner pay plus reinvestment.',
+    '**New hires:** team payroll (Office & Admin, PM, Design) ran $10,478 a month over the 2025 budget in September. I added that to the overhead budget ($286,180), which raises breakeven to $513,132. Please confirm the 2 hires\' start dates and pay so I can lock it in.',
+    '**Flex rule:** owner pay (13.56%), reinvested (1.82%), and operations (2.13%) are now scored as a % of cash collected. September owner pay was $95,483 against $52,753 allowed.',
+    '**Tax:** the YTD set-aside treats DMCS ($333,000) and Johnston Landscapes ($205,000) each as one single filer\'s pass-through income. It uses 2026 federal brackets and 2025 CA brackets (2026 not yet published), annualized, with no QBI deduction. Total YTD is about $194,498 including JVP\'s 1.5%. Confirm whether any estimates were paid.',
     '**Tax assumption:** I treated JVP as a California S-corp. Please confirm the entity type and ownership split.',
     '**Reasonable comp flag:** owner W-2 wages are $47,500 YTD, while $538,000 was paid through DMCS and JLI.',
-    '**Owner pay:** it was on budget at $95,483. But September\'s cash collected was 53% of budget. It\'s your call whether to raise that with the client.',
-  ]),
+      ]),
 
   h1('Unresolved cash items to carry forward (REVIEW)'),
   ...B([
