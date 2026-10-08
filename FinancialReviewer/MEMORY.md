@@ -82,7 +82,7 @@ NOT mine (for now): designing service tiers or workflows.
 ## ROOTS % rules (updated by Ayrica 2026-10-08)
 - Overhead fixed $. Project costs **40%**, Operations **2%**, Debt **1%** of cash collected (also track the fixed $10,000/month), Reinvested/discretionary **1.8%**, Owner pay **13.5%**.
 - **Data source = the cash-basis P&L by month** (budget and taxes are cash-based). Accrual P&L is used only for billed amounts and the balance-sheet bridge.
-- Every review includes a **YTD Snapshot**: (A) goal vs actual for each line, (B) a balance-sheet bridge showing where the profit went (cash, parked, A/R, bills/debt paid, owner draws, related-party advances, unpaid liabilities), and (C) taxable profit (cash basis) vs cash available, including owner-level tax on the K-1 share.
+- Every review includes a **YTD Snapshot** with exactly 2 parts: (1) goal vs actual (revenue, overhead, project costs 40%, operations 2%, debt 1% plus fixed, reinvested 1.8%, owner pay 13.5%); (2) taxed profit → cash you can use → where the rest went, with plain 'Lowers your taxes?' and 'Cash you can use?' columns. Tax estimates, depreciation, and the building calculator live on a separate **Tax Planning** tab.
 
 ## Compliance corrections format
 - Bullet list, copy-paste ready for the bookkeeping team.
