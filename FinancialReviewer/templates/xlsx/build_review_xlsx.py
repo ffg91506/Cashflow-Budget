@@ -89,8 +89,8 @@ rows = [
     ('Federal standard deduction (single, 2026)', 16100, CUR, 'fed_std', '2026 IRS figure'),
     ('CA standard deduction (single)', 5706, CUR, 'ca_std', '2025 CA figure (2026 not yet published)'),
     ('Cash-basis Net Operating Income YTD (reference)', 649907.85, CUR, 'cash_ni', 'QBO P&L Jan–Sep 2026, cash basis (from Ayrica). Taxable Net Income comes from the Data tab.'),
-    ('Ownership % Johnston', 0.5, CENT, 'own_j', 'ASSUMED 50/50: confirm'),
-    ('Ownership % Vidal', 0.5, CENT, 'own_v', 'ASSUMED 50/50: confirm'),
+    ('Ownership % Johnston', 0.5, CENT, 'own_j', 'Confirmed by Ayrica 10/08: 50/50'),
+    ('Ownership % Vidal', 0.5, CENT, 'own_v', 'Confirmed by Ayrica 10/08: 50/50'),
 ]
 header(wsB, 4, ['Assumption', 'Value', 'Source / note'])
 for i, (lab, val, fmt, key, note) in enumerate(rows):
@@ -416,6 +416,7 @@ put(wsS, r, 1, 'Total tax on JVP profit (YTD)', f_bb, fill=fill_band); put(wsS, 
 put(wsS, r, 1, 'Cash available after setting aside that tax', f_bb, fill=fill_band); put(wsS, r, 3, f'=C{T0+2}-C{TT}', f_bb, CUR, fill_band); CAT = r; r += 1
 put(wsS, r, 1, '% of taxable profit that is cash available today', f_bb); put(wsS, r, 3, f'=IF(C{T0}=0,"",C{T0+2}/C{T0})', f_bb, PCT); r += 1
 put(wsS, r, 1, 'Status', f_bb); put(wsS, r, 3, f'=IF(C{CAT}<0,"Short: cash does not cover the tax on profit","Covered")', f_bb); status_colors(wsS, f'C{r}:C{r}'); r += 2
+put(wsS, r, 1, 'No 2026 estimated tax payments have been made (confirmed 10/08), so nothing is subtracted. Ask the CPA about a Q4 estimate (due Jan 15, 2027) to limit underpayment penalties.', f_sub); r += 1
 put(wsS, r, 1, 'Not included: tax on DMCS and Johnston Landscapes payouts (see Monthly Summary). That is paid from those payouts, not from JVP cash.', f_sub); r += 1
 put(wsS, r, 1, 'Ways to lower the tax on profit that isn\'t cash: book 2026 depreciation on the trucks and equipment, and split loan interest out of principal (both are End of Year corrections).', f_sub)
 # ---- cash-basis profit vs accrual profit for the bridge period
@@ -709,7 +710,7 @@ REQ = [('September loan statement: Rivian R1T', 'Payment missing in the books'),
        ('Who are the 2 new hires: role, start date, pay', 'Set the overhead budget and breakeven'),
        ('Q3 lead count, proposals sent, jobs won', 'Confirm the #1 constraint'),
        ('December 2025 balance sheet', 'Fix January cash collected and loan principal'),
-       ('Ownership % for Johnston and Vidal; any 2026 estimated tax payments made', 'Finish the tax set-aside'),
+       ('2025 tax return incl. depreciation schedule (Form 4562)', 'Set the real 2026 depreciation'),
        ('Contract value for each open job', 'Complete the Open Jobs profit to date'),
        ('Monthly cash collection goal for Q4 (if different from $728,348)', 'Score against the right goal')]
 dv2 = DataValidation(type='list', formula1='"Requested,Received"', allow_blank=True); wsR.add_data_validation(dv2)
