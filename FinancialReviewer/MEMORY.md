@@ -81,6 +81,7 @@ NOT mine (for now): designing service tiers or workflows.
 
 ## ROOTS % rules (updated by Ayrica 2026-10-08)
 - Overhead fixed $. Project costs **40%**, Operations **2%**, Debt **1%** of cash collected (also track the fixed $10,000/month), Reinvested/discretionary **1.8%**, Owner pay **13.5%**.
+- **Data source = the cash-basis P&L by month** (budget and taxes are cash-based). Accrual P&L is used only for billed amounts and the balance-sheet bridge.
 - Every review includes a **YTD Snapshot**: (A) goal vs actual for each line, (B) a balance-sheet bridge showing where the profit went (cash, parked, A/R, bills/debt paid, owner draws, related-party advances, unpaid liabilities), and (C) taxable profit (cash basis) vs cash available, including owner-level tax on the K-1 share.
 
 ## Compliance corrections format
@@ -112,6 +113,8 @@ NOT mine (for now): designing service tiers or workflows.
 - 2 new hires (per Ayrica, Sept 2026): team payroll +$10,478/mo vs 2025 budget, so overhead budget is $286,180 and breakeven is $513,132. Confirm names, start dates, and pay.
 - Sept 2026 vs budget: cash collected 53% of budget, $105,861 under breakeven · overhead $262,208 (on budget) · project costs 44¢ per $1 (over) · ops 3.5¢ (over) · reinvested $19,083 (travel $6,339 vs $2,833) · owner pay $95,483 (on budget) · cash kept −$177,550.
 - JVP cash-basis net profit YTD Sep 2026: $649,907.85 (from Ayrica). Bridge Jan 31 → Sep 30: $806K profit went to escrow + undeposited ($408K), A/R ($183K), debt paydown ($118K: cards + loans), A/P paydown ($101K), owner draws ($42K), related-party advances ($18K). Sources: unpaid payroll liabilities (+$55K) and state tax refund (+$44K). Cash available ($170.6K) does not cover estimated tax on JVP profit (~$242K incl. 1.5%). Ownership assumed 50/50, to confirm.
+- JVP cash basis YTD Sep 2026: Net Operating Income $649,907.85, Net Income $642,369.02 (taxable). Unapplied Cash Bill Payment Expense −$94,271.66 YTD (−$94,601.66 in Sept) and Unapplied Cash Payment Income −$14,188.48 are REVIEW items that distort cash-basis profit.
+- JVP fixed assets: cost $637,636 (excl. $65,691 artwork), accumulated depreciation $599,146, so only about $38,490 is left to depreciate. 2026 depreciation on current assets is $38K at most. JVP is considering a ~$2M commercial building with the $288K escrow (scenario in the YTD Snapshot, section E).
 - Q3 2026 constraint: **Leads** (revised after budget: costs on or under budget, cash collected 74% of budget, billing −18% vs Q2, marketing 58% of budget). Money Leakage is second. Confirm with lead count and win rate. Q4 target: cash collected above $600K/mo by December.
 - A/R aging 9/30: 1–30 $240,373 · 31–60 $23,686 · **61–90 $103,844** (incl. DMCS $15,184; Erin Whitely $52,700) · 91+ −$130,209 (D.W. Johnston credit). I earlier mislabeled the $103,844 as 31–60 and corrected it.
 - **Open REVIEW items (carry forward until fixed):** Undeposited Funds $119,830 (since May) · BOA-4089 −$1,755.30 · unapplied $26,557.12 deposit (Inv 3789/3906/3866) · D.W. Johnston −$139,430 A/R credit · missing Sept loan payments (Rivian, Tahoe, Transit) · payroll liabilities not paid down · petty cash $26,220 · escrow $288,140 · DMCS and Johnston Landscape related-party balances.

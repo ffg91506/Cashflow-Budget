@@ -88,7 +88,7 @@ rows = [
     ('CA S-corp entity tax rate', 0.015, CENT, 'ca_corp', 'CA franchise tax on S-corp net income'),
     ('Federal standard deduction (single, 2026)', 16100, CUR, 'fed_std', '2026 IRS figure'),
     ('CA standard deduction (single)', 5706, CUR, 'ca_std', '2025 CA figure (2026 not yet published)'),
-    ('Cash-basis net profit YTD (QBO, cash basis)', 649907.85, CUR, 'cash_ni', 'From Ayrica: QBO P&L Jan–Sep 2026, cash basis'),
+    ('Cash-basis Net Operating Income YTD (reference)', 649907.85, CUR, 'cash_ni', 'QBO P&L Jan–Sep 2026, cash basis (from Ayrica). Taxable Net Income comes from the Data tab.'),
     ('Ownership % Johnston', 0.5, CENT, 'own_j', 'ASSUMED 50/50: confirm'),
     ('Ownership % Vidal', 0.5, CENT, 'own_v', 'ASSUMED 50/50: confirm'),
 ]
@@ -118,68 +118,76 @@ ca_lo, ca_step = brackets(r0 + 3 + len(FED) + 3, 'California brackets (single, 2
 widths(wsB, {'A': 46, 'B': 16, 'C': 90})
 
 # =====================================================================
-# DATA: P&L by month mapped to ROOTS (inputs)
-title(wsD, f'{CLIENT}: Monthly P&L mapped to ROOTS', 'Blue = pulled from QBO reports (P&L by Month, Balance Sheet by Month). Change a ROOTS label in column B and every summary updates.')
+# DATA: cash-basis P&L by month mapped to ROOTS (inputs)
+plc = json.load(open(f'{S}/plc.json'))
+title(wsD, f'{CLIENT}: Monthly P&L (cash basis) mapped to ROOTS', 'Blue = pulled from QBO (P&L by Month, cash basis; Balance Sheet by Month). Change a ROOTS label in column B and every summary updates.')
 MAP = [
-  ('Billed', ['Billable Expense Income', 'Construction Income', 'Design Income', 'Discounts/Refunds Given']),
-  ('Overhead', ['Non-Payroll', 'Payroll', 'Auto Fees', 'Auto Registration', 'Annual Subscriptions', 'Monthly Subscriptions', '6242 D&O Insurance', '6243 Property Insurance', 'Health Insurance', 'Workers Compensation', 'Office Rent', 'Office Repair & Maintenance', 'Office Supplies', 'Office Utilities', 'Postage & Shipping', 'Telephone & Communications', 'Bookkeeping & Accounting', 'Design & Drafting Staff', 'Office & Admin', 'Payroll Fees', 'Payroll Taxes', 'Project Manager', '6911 Professional Fees', 'Tax Prep & Tax Filing', 'Computer Maintenance', 'Software & Apps']),
-  ('Project Costs', ['Blueprints and Reproduction', 'Equipment Rental - Job Site', 'Freight & Shipping', 'Materials & Supplies', 'Merchant Fees', 'Permits & Inspection Fees - Project', 'Sanitation and Waste Disposal', 'Subcontractor Costs', 'Travel & Lodging', 'Fence', 'Hardscape', 'Landscape', 'Pool', 'Bank & Credit Card Fees', 'Bank Fees', 'Credit Card Fees', 'Parking']),
-  ('Operations', ['Gas & Fuel', 'Auto Repair & Maintenance', 'Legal Fees']),
-  ('Debt', ['Interest Fees']),
-  ('Taxes', ['City Tax', 'State Filing Fees', 'State Franchise Tax']),
-  ('Reinvested', ['Client Acquisition', 'Photoshoot & Advertising', 'Research & Development', 'Airfare', 'Hotel', 'Travel Transportation', 'Meals and Entertainment']),
-  ('Owner Pay', ['DMCS', 'JLI', "Owner's Wages & Salaries"]),
+  ('Cash Income', ['Billable Expense Income', 'Construction Income', 'Design Income', 'Discounts/Refunds Given', 'Unapplied Cash Payment Income']),
+  ('Overhead', ['Non-Payroll', 'Payroll', '6010 Office Rent', '6020 Office Utilities', '6030 Office Repair & Maintenance', '6040 Office Supplies', '6050 Telephone & Communications', '6060 Postage & Shipping', '6150 Auto Registration', '6160 Auto Fees', '6240 Workers Compensation', '6241 Health Insurance', '6242 D&O Insurance', '6243 Property Insurance', '6310 Monthly Subscriptions', '6320 Annual Subscriptions', '6410 Project Manager', '6430 Office & Admin', '6440 Design & Drafting Staff', '6463 Payroll Fees', '6464 Payroll Taxes', '6810 Software & Apps', '6830 Computer Maintenance', '6911 Professional Fees', '6940 Tax Prep & Tax Filing', '6960 Bookkeeping & Accounting']),
+  ('Project Costs', ['5100 Materials & Supplies', '5200 Merchant Fees', '5201 Blueprints and Reproduction', '5400 Subcontractor Costs', '5600 Freight & Shipping', '5700 Equipment Rental - Job Site', '5800 Permits & Inspection Fees - Project', '5801 Sanitation and Waste Disposal', '5900 Travel & Lodging', 'Fence', 'Hardscape', 'Landscape', 'Pool', '6601 Bank & Credit Card Fees', '6610 Bank Fees', '6640 Credit Card Fees', '6751 Parking']),
+  ('Operations', ['6120 Gas & Fuel', '6140 Auto Repair & Maintenance', '6910 Legal Fees']),
+  ('Debt', ['6620 Interest Fees']),
+  ('Taxes', ['6952 State Franchise Tax', '6953 State Filing Fees', '6954 City Tax']),
+  ('Reinvested', ['6530 Client Acquisition', '6710 Airfare', '6720 Hotel', '6750 Travel Transportation', '6861 Website Redesign & Development', '6852 Research & Development', '6853 Photoshoot & Advertising', 'Meals and Entertainment']),
+  ('Owner Pay', ['DMCS', 'JLI', "6462 Owner's Wages & Salaries"]),
   ('Leakage', ['Bad Debt Expense']),
+  ('Timing', ['Unapplied Cash Bill Payment Expense']),
   ('Other Income', ['Cashback & Rewards', 'Interest Income', 'Merchant Surcharge Income']),
 ]
-bs_ar = [54713.20, 1126053.45, 366508.93, 337939.08, 242152.13, 183292.97, 139514.04, 70494.47, 237693.50]
 bs_ltl = [264850.12, 260852.33, 251729.12, 243348.44, 236609.23, 227700.30, 220032.74, 208302.81, 204279.06]
 bs_draw = [4077.27, 8520.77, 11759.55, 17922.78, 28421.17, 32524.86, 36079.82, 40416.51, 46399.73]
 diff = lambda a: [None] + [round(a[i] - a[i-1], 2) for i in range(1, len(a))]
-charity = [plm['Charitable Contributions'].get(m, 0) for m in MONTHS]
+charity = [plc['Charitable Contributions'][m] for m in MONTHS]
 personal = [0] * 8 + [3500]
+accr_billed = [plm['Total for Income'].get(m, 0) for m in MONTHS]
 EXTRA = [
   ('Owner Pay', 'Owner draws (Balance Sheet change)', [bs_draw[0]] + diff(bs_draw)[1:], 'Jan assumes the draw account started 2026 at $0.'),
   ('Owner Pay', 'Personal donation reclass (9/1 JE)', personal, '$3,500 "donation to my son\'s school" is personal. Moved from Charitable Contributions.'),
   ('Reinvested', 'Charitable Contributions (business)', [c - p for c, p in zip(charity, personal)], 'Charitable Contributions less the personal donation.'),
   ('Debt', 'Loan principal paid (Balance Sheet change)', [0] + [-x for x in diff(bs_ltl)[1:]], 'Jan unknown: need the Dec 2025 balance sheet. Sept is missing 3 payments (REVIEW).'),
-  ('AR Change', 'Change in A/R (Balance Sheet)', [0] + diff(bs_ar)[1:], 'Jan unknown: need Dec 2025 A/R. Jan cash collected = billed until provided.'),
+  ('Billed (accrual)', 'Invoices billed (accrual P&L, info only)', accr_billed, 'From the accrual P&L by Month. Not part of the cash math.'),
 ]
 header(wsD, 4, ['Account', 'ROOTS label'] + MONTHS + ['YTD', 'Note'])
 r = 5
 for cat, accts in MAP:
     for a in accts:
-        vals = plm.get(a, {})
+        vals = plc[a]
         put(wsD, r, 1, a); put(wsD, r, 2, cat, f_in)
-        for m in MONTHS: put(wsD, r, ord(MC[m]) - 64, vals.get(m, 0), f_in, CUR)
-        put(wsD, r, 12, f'=SUM(C{r}:K{r})', f_bb, CUR); r += 1
+        for m in MONTHS: put(wsD, r, ord(MC[m]) - 64, vals[m], f_in, CUR)
+        put(wsD, r, 12, f'=SUM(C{r}:K{r})', f_bb, CUR)
+        if cat == 'Timing': put(wsD, r, 13, 'REVIEW: bill payments not applied to bills. They lower cash-basis expenses (Sept −$94,602).', f_sub)
+        if a == 'Unapplied Cash Payment Income': put(wsD, r, 13, 'REVIEW: customer payments not applied to invoices.', f_sub)
+        r += 1
 for cat, name, vals, note in EXTRA:
     put(wsD, r, 1, name); put(wsD, r, 2, cat, f_in)
-    for i, m in enumerate(MONTHS):
-        c = put(wsD, r, 3 + i, vals[i] if vals[i] is not None else 0, f_in, CUR)
+    for i, m in enumerate(MONTHS): put(wsD, r, 3 + i, vals[i] if vals[i] is not None else 0, f_in, CUR)
     put(wsD, r, 12, f'=SUM(C{r}:K{r})', f_bb, CUR); put(wsD, r, 13, note, f_sub); r += 1
 DATA_LAST = r - 1
 r += 1
-put(wsD, r, 1, 'QBO Net Income (check)', f_bb); put(wsD, r, 2, 'Check', f_in)
-for m in MONTHS: put(wsD, r, ord(MC[m]) - 64, plm['Net Income'].get(m, 0), f_in, CUR)
-put(wsD, r, 12, f'=SUM(C{r}:K{r})', f_bb, CUR); NI_ROW = r; r += 1
+put(wsD, r, 1, 'QBO Net Income, cash basis (check)', f_bb); put(wsD, r, 2, 'Check', f_in)
+for m in MONTHS: put(wsD, r, ord(MC[m]) - 64, plc['Net Income'][m], f_in, CUR)
+put(wsD, r, 12, f'=SUM(C{r}:K{r})', f_bb, CUR); put(wsD, r, 13, 'Cash-basis Net Operating Income YTD is $649,907.85. Net Income after other income/expenses is this row.', f_sub); NI_ROW = r; r += 1
 put(wsD, r, 1, 'Mapped Net Income (should match)', f_bb)
 for i, m in enumerate(MONTHS):
     col = MC[m]; rng = lambda lab: f'SUMIFS({col}$5:{col}${DATA_LAST},$B$5:$B${DATA_LAST},"{lab}")'
     excl = f'SUMIFS({col}$5:{col}${DATA_LAST},$A$5:$A${DATA_LAST},"Owner draws (Balance Sheet change)")+SUMIFS({col}$5:{col}${DATA_LAST},$A$5:$A${DATA_LAST},"Loan principal paid (Balance Sheet change)")'
-    f = (f'={rng("Billed")}+{rng("Other Income")}-({rng("Overhead")}+{rng("Project Costs")}+{rng("Operations")}+{rng("Debt")}+{rng("Taxes")}+{rng("Reinvested")}+{rng("Owner Pay")}+{rng("Leakage")})+({excl})')
+    f = (f'={rng("Cash Income")}+{rng("Other Income")}-({rng("Overhead")}+{rng("Project Costs")}+{rng("Operations")}+{rng("Debt")}+{rng("Taxes")}+{rng("Reinvested")}+{rng("Owner Pay")}+{rng("Leakage")}+{rng("Timing")})+({excl})')
     put(wsD, r, 3 + i, f, f_b, CUR)
 put(wsD, r, 12, f'=SUM(C{r}:K{r})', f_bb, CUR); put(wsD, r, 13, 'Difference row below must be 0.', f_sub); r += 1
 put(wsD, r, 1, 'Difference', f_bb)
 for i in range(10): put(wsD, r, 3 + i, f'={chr(67+i)}{r-2}-{chr(67+i)}{r-1}', f_bb, CUR)
-widths(wsD, {'A': 40, 'B': 14, 'L': 13, 'M': 70, **{MC[m]: 12 for m in MONTHS}})
+r += 2
+put(wsD, r, 1, 'QBO Net Income, accrual basis (info)', f_bb); put(wsD, r, 2, 'Info', f_in)
+for m in MONTHS: put(wsD, r, ord(MC[m]) - 64, plm['Net Income'].get(m, 0), f_in, CUR)
+put(wsD, r, 12, f'=SUM(C{r}:K{r})', f_bb, CUR); put(wsD, r, 13, 'Used for the balance sheet bridge (YTD Snapshot).', f_sub); ACC_NI_ROW = r
+widths(wsD, {'A': 40, 'B': 14, 'L': 13, 'M': 80, **{MC[m]: 12 for m in MONTHS}})
 wsD.freeze_panes = 'C5'
 DR = f'$B$5:$B${DATA_LAST}'
 def dsum(col, lab): return f'SUMIFS(Data!{col}$5:{col}${DATA_LAST},Data!{DR},"{lab}")'
 
 # =====================================================================
 # YTD SUMMARY
-title(wsY, f'{CLIENT}: YTD Summary vs. Goal (Jan – Sep 2026)', 'Fixed lines (overhead, debt, taxes) are compared in dollars. Flex lines (project costs, operations, reinvested, owner pay, cash kept) are compared as a % of cash collected that month.')
+title(wsY, f'{CLIENT}: YTD Summary vs. Goal (Jan – Sep 2026, cash basis)', 'Fixed lines (overhead, taxes) are compared in dollars. Flex lines (project costs, operations, debt, reinvested, owner pay, cash kept) are compared as a % of cash collected that month.')
 header(wsY, 4, ['Line', 'Rule'] + MONTHS + ['YTD actual', 'YTD goal / allowed', 'Over / (under)', 'Status'])
 put(wsY, 5, 1, 'Month #', f_sub); [put(wsY, 5, 3 + i, i + 1, f_sub) for i in range(9)]
 Y = {}
@@ -189,12 +197,12 @@ def yrow(r, label, rule, fn, bold=False, fmt=CUR):
     put(wsY, r, 12, f'=SUM(C{r}:K{r})', f_bb, fmt)
     Y[label] = r
 r = 7; put(wsY, r - 1, 1, 'ACTUAL', f_h)
-yrow(r, 'Billed', 'Invoices', lambda c: '=' + dsum(c, 'Billed')); r += 1
-yrow(r, 'Change in A/R', 'Balance sheet', lambda c: '=' + dsum(c, 'AR Change')); r += 1
-yrow(r, 'Cash collected', 'Billed − A/R change', lambda c: f'={c}{Y["Billed"]}-{c}{Y["Change in A/R"]}', True); r += 1
-for lab, key in [('Overhead', 'Overhead'), ('Project costs', 'Project Costs'), ('Operations', 'Operations'), ('Debt', 'Debt'), ('Taxes', 'Taxes'), ('Reinvested', 'Reinvested'), ('Owner pay', 'Owner Pay'), ('Leakage', 'Leakage')]:
-    yrow(r, lab, 'Recorded', lambda c, key=key: '=' + dsum(c, key)); r += 1
-yrow(r, 'Cash kept', 'Cash − everything above', lambda c: f'={c}{Y["Cash collected"]}-SUM({c}{Y["Overhead"]}:{c}{Y["Leakage"]})', True); r += 2
+yrow(r, 'Billed', 'Invoices (accrual, info)', lambda c: '=' + dsum(c, 'Billed (accrual)')); r += 1
+yrow(r, 'Change in A/R', 'Billed − collected (info)', lambda c: f'={c}{Y["Billed"]}-{c}{r+1}'); r += 1
+yrow(r, 'Cash collected', 'Cash-basis income', lambda c: '=' + dsum(c, 'Cash Income'), True); r += 1
+for lab, key in [('Overhead', 'Overhead'), ('Project costs', 'Project Costs'), ('Operations', 'Operations'), ('Debt', 'Debt'), ('Taxes', 'Taxes'), ('Reinvested', 'Reinvested'), ('Owner pay', 'Owner Pay'), ('Leakage', 'Leakage'), ('Timing', 'Timing')]:
+    yrow(r, lab, 'Unapplied bill payments (REVIEW)' if lab == 'Timing' else 'Paid (cash basis)', lambda c, key=key: '=' + dsum(c, key)); r += 1
+yrow(r, 'Cash kept', 'Cash − everything above', lambda c: f'={c}{Y["Cash collected"]}-SUM({c}{Y["Overhead"]}:{c}{Y["Timing"]})', True); r += 2
 put(wsY, r, 1, 'GOAL / ALLOWED', f_h); r += 1
 GA = {}
 def grow(label, rule, fn):
@@ -214,9 +222,10 @@ grow('Taxes', 'Fixed $', lambda c: f"={B['tax_m']}")
 grow('Reinvested', '1.8% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_reinv']}")
 grow('Owner pay', '13.5% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_owner']}")
 grow('Leakage', 'Target $0', lambda c: f"={B['leak']}")
+grow('Timing', 'Target $0 (apply payments)', lambda c: '=0')
 grow('Cash kept', '2.87% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_kept']}")
 # YTD compare columns on ACTUAL rows
-for lab in ['Cash collected', 'Overhead', 'Project costs', 'Operations', 'Debt', 'Taxes', 'Reinvested', 'Owner pay', 'Leakage', 'Cash kept']:
+for lab in ['Cash collected', 'Overhead', 'Project costs', 'Operations', 'Debt', 'Taxes', 'Reinvested', 'Owner pay', 'Leakage', 'Timing', 'Cash kept']:
     ra, rg = Y[lab], GA[lab]
     put(wsY, ra, 13, f'=L{rg}', f_b, CUR); put(wsY, ra, 14, f'=L{ra}-M{ra}', f_bb, CUR)
     if lab in ('Cash collected', 'Cash kept'):
@@ -260,7 +269,7 @@ put(wsM, 13, 1, 'ROOTS scorecard: budget vs. actual', f_h)
 header(wsM, 14, ['ROOTS', 'Line', 'Rule', 'Allowed / goal', 'Actual', 'Over / (under)', '% of cash collected', 'Status'])
 sc = [('R', 'Cash collected', 'Goal'), ('O', 'Overhead', 'Fixed $ (with new hires)'), ('O', 'Project costs', '40% of cash'),
       ('O', 'Operations', '2% of cash'), ('O', 'Debt', '1% of cash'), ('T', 'Taxes', 'Fixed $ (entity taxes paid)'),
-      ('S', 'Reinvested', '1.8% of cash'), ('S', 'Owner pay', '13.5% of cash'), ('S', 'Leakage', 'Target $0'), ('S', 'Cash kept', '2.87% of cash')]
+      ('S', 'Reinvested', '1.8% of cash'), ('S', 'Owner pay', '13.5% of cash'), ('S', 'Leakage', 'Target $0'), ('S', 'Timing', 'Unapplied bill payments'), ('S', 'Cash kept', '2.87% of cash')]
 for i, (rt, lab, rule) in enumerate(sc):
     rr = 15 + i
     put(wsM, rr, 1, rt, f_bb); put(wsM, rr, 2, lab); put(wsM, rr, 3, rule, f_sub)
@@ -270,12 +279,12 @@ for i, (rt, lab, rule) in enumerate(sc):
         put(wsM, rr, 8, f'=IF(F{rr}>=0,"On goal","Short")', f_bb)
     else:
         put(wsM, rr, 8, f'=IF(F{rr}>0,"Over","Under")', f_bb)
-status_colors(wsM, 'H15:H24')
+status_colors(wsM, 'H15:H25')
 put(wsM, 26, 1, 'Taxes: what to set aside for 2026 so far', f_h)
 put(wsM, 27, 1, 'Estimate. Each related-entity payout is taxed as one single filer\'s pass-through income: annualized, then the YTD share is shown. Subtract any estimated payments already made. Not included: owner W-2 wages and each owner\'s share of JVP profit (need ownership %).', f_sub)
 header(wsM, 28, ['Who', 'YTD income', 'Annualized', 'CA 1.5% entity tax (YTD)', 'Federal taxable (annual)', 'Federal tax (YTD)', 'CA taxable (annual)', 'CA tax (YTD)', 'Set aside YTD'])
 mf = f"{B['months']}/12"
-tax_rows = [('JVP net profit', f'=Data!L{NI_ROW}', False),
+tax_rows = [('JVP net profit (cash basis)', f'=Data!L{NI_ROW}', False),
             ('DMCS (pass-through)', '=SUMIFS(Data!$L$5:$L$%d,Data!$A$5:$A$%d,"DMCS")' % (DATA_LAST, DATA_LAST), True),
             ('Johnston Landscapes (pass-through)', '=SUMIFS(Data!$L$5:$L$%d,Data!$A$5:$A$%d,"JLI")' % (DATA_LAST, DATA_LAST), True)]
 for i, (lab, src, ind) in enumerate(tax_rows):
@@ -321,17 +330,18 @@ snap = [('Revenue: cash collected', 'Cash collected', 'Cash collected', 'Goal $7
         ('Reinvested / discretionary', 'Reinvested', 'Reinvested', '1.8% of cash collected'),
         ('Owner pay', 'Owner pay', 'Owner pay', '13.5% of cash collected'),
         ('Taxes paid (entity)', 'Taxes', 'Taxes', 'Fixed $'),
-        ('Leakage', 'Leakage', 'Leakage', 'Target $0')]
+        ('Leakage', 'Leakage', 'Leakage', 'Target $0'),
+        ('Unapplied bill payments (timing)', 'Timing', 'Timing', 'Target $0: REVIEW')]
 for i, (lab, g, a, rule) in enumerate(snap):
     rr = 6 + i
     put(wsS, rr, 1, lab, f_bb if i == 0 else f_b); put(wsS, rr, 2, rule, f_sub)
     put(wsS, rr, 3, f"='YTD Summary'!L{GA[g]}", f_link, CUR); put(wsS, rr, 4, f"='YTD Summary'!L{Y[a]}", f_link, CUR)
     put(wsS, rr, 5, f'=D{rr}-C{rr}', f_bb, CUR); put(wsS, rr, 6, f'=IF($D$6=0,"",D{rr}/$D$6)', f_b, PCT)
     put(wsS, rr, 7, f'=IF(E{rr}>=0,"On goal","Short")' if i == 0 else f'=IF(E{rr}>0,"Over","Under")', f_bb)
-status_colors(wsS, 'G6:G15')
-put(wsS, 16, 1, 'Profit after all of the above (cash kept)', f_bb, fill=fill_band)
-put(wsS, 16, 4, f"='YTD Summary'!L{Y['Cash kept']}", f_link, CUR, fill_band); put(wsS, 16, 6, '=IF($D$6=0,"",D16/$D$6)', f_b, PCT, fill_band)
-put(wsS, 17, 1, 'January cash collected = billed until the Dec 31, 2025 balance sheet is added (Data tab, A/R change).', f_sub)
+status_colors(wsS, 'G6:G16')
+put(wsS, 17, 1, 'Profit after all of the above (cash kept)', f_bb, fill=fill_band)
+put(wsS, 17, 4, f"='YTD Summary'!L{Y['Cash kept']}", f_link, CUR, fill_band); put(wsS, 17, 6, '=IF($D$6=0,"",D17/$D$6)', f_b, PCT, fill_band)
+put(wsS, 18, 1, 'Cash basis. Includes −$94,272 of unapplied bill payments (Timing row on YTD Summary) that lower expenses: a REVIEW item.', f_sub)
 
 # ---- B. Where the profit went (balance sheet bridge)
 put(wsS, 19, 1, 'B. Where the profit went: balance sheet bridge', f_h)
@@ -364,7 +374,7 @@ for lab, bucket, st, sep, sign, cash_m, tax_m in BS:
 LASTBS = r - 1
 r += 1
 put(wsS, r, 1, 'Net profit for the bridge period (accrual, QBO)', f_bb)
-put(wsS, r, 6, f'=Data!L{NI_ROW}-IF(B20="Dec 31, 2025",0,Data!C{NI_ROW})', f_link, CUR); NIP = r; r += 1
+put(wsS, r, 6, f'=Data!L{ACC_NI_ROW}-IF(B20="Dec 31, 2025",0,Data!C{ACC_NI_ROW})', f_link, CUR); NIP = r; r += 1
 put(wsS, r, 1, 'Starting cash (bank + petty cash)', f_bb); put(wsS, r, 6, f'=C{FIRST}+C{FIRST+1}', f_b, CUR); SC = r; r += 1
 put(wsS, r, 1, 'Ending cash per bridge (start + profit + effects above)', f_bb); put(wsS, r, 6, f'=F{SC}+F{NIP}+SUM(F{FIRST+2}:F{LASTBS})', f_bb, CUR); EB = r; r += 1
 put(wsS, r, 1, 'Actual cash on Sep 30 (bank + petty cash)', f_bb); put(wsS, r, 6, f'=D{FIRST}+D{FIRST+1}', f_b, CUR); AC = r; r += 1
@@ -387,8 +397,8 @@ put(wsS, r, 1, 'C. Taxable profit vs. cash available', f_h); r += 1
 header(wsS, r, ['Line', 'Basis', 'Amount', 'Note']); r += 1
 T0 = r
 rows_t = [
- ('Taxable profit YTD (cash basis, QBO)', 'Input', f"={B['cash_ni']}", 'From Ayrica. JVP\'s return is taxed on this.'),
- ('Accrual profit YTD (QBO)', 'Data', f'=Data!L{NI_ROW}', 'Difference is mostly customer balances and bills not yet paid.'),
+ ('Taxable profit YTD (cash-basis Net Income, QBO)', 'Data', f'=Data!L{NI_ROW}', 'JVP\'s return is taxed on this. Net Operating Income is $649,908; other income and expenses bring it to Net Income.'),
+ ('Accrual profit YTD (QBO)', 'Data', f'=Data!L{ACC_NI_ROW}', 'Difference is mostly customer balances and bills not yet paid.'),
  ('Cash available today (bank, excl. petty cash)', 'Balance sheet', f'=D{FIRST}', 'Spendable now.'),
  ('Parked (escrow + undeposited)', 'Balance sheet', f'=D{FIRST+2}+D{FIRST+3}', 'Not spendable until released or deposited.'),
  ('JVP company tax (CA 1.5% of cash-basis profit)', 'Estimate', f"=C{T0}*{B['ca_corp']}", 'Paid by JVP.'),
@@ -408,6 +418,57 @@ put(wsS, r, 1, '% of taxable profit that is cash available today', f_bb); put(ws
 put(wsS, r, 1, 'Status', f_bb); put(wsS, r, 3, f'=IF(C{CAT}<0,"Short: cash does not cover the tax on profit","Covered")', f_bb); status_colors(wsS, f'C{r}:C{r}'); r += 2
 put(wsS, r, 1, 'Not included: tax on DMCS and Johnston Landscapes payouts (see Monthly Summary). That is paid from those payouts, not from JVP cash.', f_sub); r += 1
 put(wsS, r, 1, 'Ways to lower the tax on profit that isn\'t cash: book 2026 depreciation on the trucks and equipment, and split loan interest out of principal (both are End of Year corrections).', f_sub)
+# ---- cash-basis profit vs accrual profit for the bridge period
+r += 1
+put(wsS, r, 1, 'D. Why cash-basis profit is lower than accrual profit (bridge period)', f_h); r += 1
+put(wsS, r, 1, 'Accrual profit (bridge period)'); put(wsS, r, 3, f'=F{NIP}', f_b, CUR); R1 = r; r += 1
+put(wsS, r, 1, 'Minus: customers still owe (A/R went up)'); put(wsS, r, 3, f'=-E{FIRST+4}', f_b, CUR); r += 1
+put(wsS, r, 1, 'Minus: old vendor bills paid (A/P went down)'); put(wsS, r, 3, f'=E{FIRST+7}', f_b, CUR); r += 1
+put(wsS, r, 1, 'Unapplied payments + other timing (REVIEW)'); put(wsS, r, 3, f'=C{r+1}-SUM(C{R1}:C{r-1})', f_b, CUR); r += 1
+put(wsS, r, 1, 'Cash-basis profit (bridge period)', f_bb, fill=fill_band)
+put(wsS, r, 3, f'=Data!L{NI_ROW}-IF(B20="Dec 31, 2025",0,Data!C{NI_ROW})', f_bb, CUR, fill_band); r += 2
+
+# ---- E. Tax planning: depreciation + building scenario
+put(wsS, r, 1, 'E. Tax planning: 2026 depreciation + commercial building scenario', f_h); r += 1
+put(wsS, r, 1, 'Blue/yellow cells are inputs. Estimates only: confirm with the CPA\'s depreciation schedule (Form 4562) before filing.', f_sub); r += 1
+header(wsS, r, ['Line', 'Note', 'Amount']); r += 1
+E = {}
+def erow(key, lab, val, note='', fmt=CUR, inp=False, bold=False):
+    global r
+    put(wsS, r, 1, lab, f_bb if bold else f_b); put(wsS, r, 2, note, f_sub, al=wrap)
+    put(wsS, r, 3, val, f_in if inp else (f_bb if bold else f_b), fmt, fill_in if inp else (fill_band if bold else None))
+    E[key] = f'C{r}'; r += 1
+put(wsS, r, 1, 'Current trucks + equipment', f_bb); r += 1
+erow('cost', 'Cost of trucks, equipment, computers, furniture', 637636.23, 'Balance sheet Sep 30 (excludes Office Artwork: art is not depreciable).', inp=True)
+erow('acc', 'Depreciation already taken', 599145.95, 'Accumulated Depreciation, unchanged since Jan.', inp=True)
+erow('left', 'Left to depreciate', f"={E['cost']}-{E['acc']}", 'Most of the cost was already written off (likely bonus / Sec. 179 in earlier years).')
+erow('dep26', 'Most 2026 depreciation on current assets', f"={E['left']}", 'Ceiling, not the real number. The CPA\'s schedule sets the actual amount.', bold=True)
+r += 1; put(wsS, r, 1, 'Commercial building (escrow)', f_bb); r += 1
+erow('price', 'Purchase price', 2000000, '', inp=True)
+erow('land', 'Land share (not depreciable)', 0.25, 'Use the county assessor\'s land/improvement split or an appraisal.', CENT, inp=True)
+erow('basis', 'Building basis (depreciable)', f"={E['price']}*(1-{E['land']})")
+erow('month', 'Month placed in service in 2026 (1–12)', 11, 'Ready for use, not just escrow closing. The deposit alone is not deductible.', '0', inp=True)
+erow('seg', 'Cost segregation: share moved to 5/7/15-year property', 0.20, 'Typical 15–30%. Needs an engineering study. Use 0% if there is no study.', CENT, inp=True)
+erow('bonus', 'Bonus depreciation rate on that share (federal)', 1.0, '100% bonus restored for property acquired after Jan 19, 2025 (2025 tax law). Confirm with CPA.', CENT, inp=True)
+erow('fbonus', '2026 bonus depreciation (federal)', f"={E['basis']}*{E['seg']}*{E['bonus']}")
+erow('fsl', '2026 straight-line, 39 years, mid-month', f"={E['basis']}*(1-{E['seg']})/39*(12-{E['month']}+0.5)/12")
+erow('fed26', 'Federal 2026 depreciation from the building', f"={E['fbonus']}+{E['fsl']}", bold=True)
+erow('full', 'Full-year straight-line after 2026', f"={E['basis']}*(1-{E['seg']})/39", 'Each year for 39 years (plus any short-life property not bonused).')
+erow('rate', 'Owners\' federal tax rate', 0.35, 'Top bracket the owners are in.', CENT, inp=True)
+erow('fsave', 'Federal tax saved in 2026 (estimate)', f"=({E['fed26']}+{E['dep26']})*{E['rate']}", 'Building + current assets.', bold=True)
+erow('ca26', 'California 2026 depreciation (no bonus)', f"={E['basis']}/39*(12-{E['month']}+0.5)/12", 'California does not follow federal bonus depreciation, so the CA benefit is much smaller.')
+r += 1; put(wsS, r, 1, 'Cash flow of buying it', f_bb); r += 1
+erow('down', 'Down payment from escrow', f'=D{FIRST+2}', 'Escrow balance Sep 30.')
+erow('loan', 'Loan needed', f"={E['price']}-{E['down']}")
+erow('apr', 'Interest rate', 0.07, '', CENT, inp=True)
+erow('yrs', 'Loan term (years)', 25, '', '0', inp=True)
+erow('pmt', 'Monthly loan payment', f"=PMT({E['apr']}/12,{E['yrs']}*12,-{E['loan']})", 'Only the interest part is deductible. Principal is not.', bold=True)
+erow('rent', 'Office rent no longer paid (if JVP moves in)', 4454.54, 'Current monthly rent.', inp=True)
+erow('net', 'Net new monthly cash out', f"={E['pmt']}-{E['rent']}")
+erow('allow', 'Debt allowed at 1% of the cash goal', f"={B['cash_goal']}*{B['p_debt']}")
+erow('fit', 'Fits the 1% debt rule?', f"=IF({E['pmt']}<={E['allow']},\"Yes\",\"No: over by \"&TEXT({E['pmt']}-{E['allow']},\"$#,##0\")&\"/month\")", fmt=None, bold=True)
+status_colors(wsS, f"{E['fit']}:{E['fit']}")
+put(wsS, r, 1, 'Structure question for the CPA/attorney: buy in JVP, or in a separate real-estate LLC that leases to JVP (rent deductible to JVP; property kept outside the operating company).', f_sub); r += 1
 widths(wsS, {'A': 44, 'B': 28, 'C': 16, 'D': 16, 'E': 14, 'F': 15, 'G': 46, 'H': 50})
 wsS.freeze_panes = 'A6'
 
@@ -573,6 +634,8 @@ CORR = [
  ('REVIEW: affects cash', '1. Balance Sheet General Corrections', 'Escrow shows $288,139.71. Tie it to the Glen Oaks Escrow statement. It jumped $232,825 in August.', 288139.71),
  ('REVIEW: affects cash', '1. Balance Sheet General Corrections', 'Due to DMCS is −$14,887.00, which means DMCS owes JVP. Confirm the balance.', -14887.00),
  ('REVIEW: affects cash', '1. Balance Sheet General Corrections', 'Due to Johnston Landscape is −$2,970.00 because JVP pays $495 a month in ADP 401K for Johnston Landscapes. Set up repayment or reclass.', -2970.00),
+ ('REVIEW: affects cash', '1. Balance Sheet General Corrections', 'Unapplied Cash Bill Payment Expense is −$94,601.66 in September (−$94,271.66 YTD, cash basis). Apply these bill payments to their vendor bills. Until then, cash-basis expenses and taxable profit are off by this amount.', -94271.66),
+ ('REVIEW: affects cash', '2. Accounts Receivable Corrections', 'Unapplied Cash Payment Income is −$14,188.48 YTD (cash basis; −$128,110 in Feb, +$140,144 in Apr). Apply customer payments to their invoices.', -14188.48),
  ('REVIEW: affects cash', '2. Accounts Receivable Corrections', 'The 9/14 deposit of $26,557.12 (TRUST DEPT) was posted to A/R with no customer. Apply it to Inv 3789 ($637.50), Inv 3906 ($225.00), and Inv 3866 ($25,694.62) under the correct customer.', 26557.12),
  ('REVIEW: affects cash', '2. Accounts Receivable Corrections', 'D.W. Johnston Construction shows a −$139,430.00 credit that is 91+ days old. Apply it to open invoices, or reclass it.', -139430.00),
  ('REVIEW: affects cash', '2. Accounts Receivable Corrections', 'Michael Balzary NKSFB LLC shows a −$6,375.00 credit. Apply it or reclass it.', -6375.00),
