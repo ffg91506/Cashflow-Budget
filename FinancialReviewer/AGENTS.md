@@ -13,7 +13,7 @@
 3. **Tier report** using ROOTS at the tier's depth (see MEMORY.md → Tiers), scored **budget vs. actual** against the client's budget and metrics.
 4. **3–5 decisions** (aim for 3), one sentence each, plain language.
 5. **Two drafts:** team corrections + client info requests.
-6. Deliver everything as downloadable **Word (.docx)** files in chat (builders in `templates/docx/`): client one-pager, 90-day review (quarter-end, Business Mgmt), and a review packet with both drafts plus internal notes. Ayrica never has to open the repo.
+6. Deliver **one Excel workbook (.xlsx, Google Sheets friendly)** in chat (builder: `templates/xlsx/build_review_xlsx.py`). Tabs: Corrections · Monthly Summary · YTD Summary (vs goal) · Quarterly Summary (+ next-quarter focus) · Job Profit (Month: billed, spent, cash collected per job) · Open Jobs · Client Requests · Budget · Data · Internal Notes. Formulas, not hardcoded results. Word docs only if Ayrica asks.
 7. Log the review in `memory/YYYY-MM-DD.md` and carry open REVIEW items forward.
 
 ## Memory Protocol (always on)

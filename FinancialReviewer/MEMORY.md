@@ -62,7 +62,8 @@ NOT mine (for now): designing service tiers or workflows.
 - Deliverables always come as downloadable PDFs in chat.
 
 ## Deliverable format (set by Ayrica 2026-10-07)
-- Deliver as **Word documents (.docx)** so Ayrica can drop them into Google Docs. Not PDF.
+- **Primary deliverable (2026-10-08): one Excel workbook** that converts to Google Sheets, with a tab per report: Corrections, Monthly Summary, YTD Summary vs goal, Quarterly Summary + focus, Job Profit (month: billed, spent, cash collected per job), Open Jobs. Support tabs: Client Requests, Budget (inputs), Data (P&L mapped to ROOTS), Internal Notes. (Word docs were the earlier format.)
+- Cash collected per job = customer payments from the GL, matched to jobs by invoice amount (job billing plus the 3% card surcharge).
 - Each review comes with the client's **company budget + overview** (ROOTS budget workbook). The ROOTS summary must compare actuals to that budget and its metrics, not just to averages.
 - **REVIEW (affects cash)** section is split into these subsections, in this order:
   1. Balance Sheet General Corrections
@@ -107,4 +108,5 @@ NOT mine (for now): designing service tiers or workflows.
 - 2 new hires (per Ayrica, Sept 2026): team payroll +$10,478/mo vs 2025 budget, so overhead budget is $286,180 and breakeven is $513,132. Confirm names, start dates, and pay.
 - Sept 2026 vs budget: cash collected 53% of budget, $105,861 under breakeven · overhead $262,208 (on budget) · project costs 44¢ per $1 (over) · ops 3.5¢ (over) · reinvested $19,083 (travel $6,339 vs $2,833) · owner pay $95,483 (on budget) · cash kept −$177,550.
 - Q3 2026 constraint: **Leads** (revised after budget: costs on or under budget, cash collected 74% of budget, billing −18% vs Q2, marketing 58% of budget). Money Leakage is second. Confirm with lead count and win rate. Q4 target: cash collected above $600K/mo by December.
+- A/R aging 9/30: 1–30 $240,373 · 31–60 $23,686 · **61–90 $103,844** (incl. DMCS $15,184; Erin Whitely $52,700) · 91+ −$130,209 (D.W. Johnston credit). I earlier mislabeled the $103,844 as 31–60 and corrected it.
 - **Open REVIEW items (carry forward until fixed):** Undeposited Funds $119,830 (since May) · BOA-4089 −$1,755.30 · unapplied $26,557.12 deposit (Inv 3789/3906/3866) · D.W. Johnston −$139,430 A/R credit · missing Sept loan payments (Rivian, Tahoe, Transit) · payroll liabilities not paid down · petty cash $26,220 · escrow $288,140 · DMCS and Johnston Landscape related-party balances.
