@@ -61,7 +61,7 @@ def status_colors(ws, rng):
 # =====================================================================
 # Tab order per Ayrica: Corrections, Monthly, YTD, Quarterly, Job Profit, Open Jobs (+ support tabs)
 wsC = sheet('Corrections', first=True)
-wsM = sheet('Monthly Summary'); wsY = sheet('YTD Summary'); wsQ = sheet('Quarterly Summary')
+wsM = sheet('Monthly Summary'); wsS = sheet('YTD Snapshot'); wsY = sheet('YTD Summary'); wsQ = sheet('Quarterly Summary')
 wsJ = sheet('Job Profit (Month)'); wsO = sheet('Open Jobs'); wsR = sheet('Client Requests')
 wsB = sheet('Budget'); wsD = sheet('Data'); wsN = sheet('Internal Notes')
 
@@ -76,10 +76,11 @@ rows = [
     ('New-hire add-on starts in month #', 9, '0', 'oh_start', '9 = September'),
     ('Debt payments per month', 10000, CUR, 'debt', 'Per Ayrica: $10,000/month principal + interest'),
     ('Entity taxes per month', 2576.56, CUR, 'tax_m', 'Franchise + city tax, 2025 average'),
-    ('Project costs (% of cash collected)', 0.4015, CENT, 'p_cogs', 'COGS excl. crew labor'),
-    ('Operations (% of cash collected)', 0.0213, CENT, 'p_ops', 'Fuel, truck repairs, legal'),
-    ('Reinvested (% of cash collected)', 158892.72 / 8740181.44, CENT, 'p_reinv', 'Marketing, travel, meals, brand'),
-    ('Owner pay (% of cash collected)', 1185023.73 / 8740181.44, CENT, 'p_owner', 'Wages + DMCS + Johnston Landscapes'),
+    ('Project costs (% of cash collected)', 0.40, CENT, 'p_cogs', 'Per Ayrica 10/08: 40% (COGS excl. crew labor)'),
+    ('Operations (% of cash collected)', 0.02, CENT, 'p_ops', 'Per Ayrica 10/08: 2% (fuel, truck repairs, legal)'),
+    ('Debt (% of cash collected)', 0.01, CENT, 'p_debt', 'Per Ayrica 10/08: 1%. The fixed $10,000/month is still tracked.'),
+    ('Reinvested (% of cash collected)', 0.018, CENT, 'p_reinv', 'Per Ayrica 10/08: 1.8% (marketing, travel, meals, brand: discretionary)'),
+    ('Owner pay (% of cash collected)', 0.135, CENT, 'p_owner', 'Per Ayrica 10/08: 13.5% (wages + DMCS + Johnston Landscapes + draws)'),
     ('Cash kept target (% of cash collected)', 250642.35 / 8740181.44, CENT, 'p_kept', 'Net cash kept in business, 2025'),
     ('Leakage target', 0, CUR, 'leak', 'Penalties, bad debt, fraud'),
     ('Target job profit (kept per $1 billed)', 0.43, CENT, 'job_tgt', '2026 YTD gross margin (P&L by Month)'),
@@ -87,11 +88,14 @@ rows = [
     ('CA S-corp entity tax rate', 0.015, CENT, 'ca_corp', 'CA franchise tax on S-corp net income'),
     ('Federal standard deduction (single, 2026)', 16100, CUR, 'fed_std', '2026 IRS figure'),
     ('CA standard deduction (single)', 5706, CUR, 'ca_std', '2025 CA figure (2026 not yet published)'),
+    ('Cash-basis net profit YTD (QBO, cash basis)', 649907.85, CUR, 'cash_ni', 'From Ayrica: QBO P&L Jan–Sep 2026, cash basis'),
+    ('Ownership % Johnston', 0.5, CENT, 'own_j', 'ASSUMED 50/50: confirm'),
+    ('Ownership % Vidal', 0.5, CENT, 'own_v', 'ASSUMED 50/50: confirm'),
 ]
 header(wsB, 4, ['Assumption', 'Value', 'Source / note'])
 for i, (lab, val, fmt, key, note) in enumerate(rows):
     r = 5 + i
-    put(wsB, r, 1, lab); c = put(wsB, r, 2, val, f_in, fmt, fill_in if key in ('oh_add', 'oh_start', 'months') else None); put(wsB, r, 3, note, f_sub)
+    put(wsB, r, 1, lab); c = put(wsB, r, 2, val, f_in, fmt, fill_in if key in ('oh_add', 'oh_start', 'months', 'own_j', 'own_v', 'cash_ni') else None); put(wsB, r, 3, note, f_sub)
     B[key] = f"Budget!$B${r}"
 r0 = 5 + len(rows) + 2
 put(wsB, r0, 1, 'Breakeven: cash needed per month (with new hires)', f_bb)
@@ -202,12 +206,13 @@ oh = lambda c: f"({B['oh_base']}+IF({c}$5>={B['oh_start']},{B['oh_add']},0))"
 grow('Cash collected', 'Goal', lambda c: f"={B['cash_goal']}")
 grow('Breakeven', 'Overhead + debt', lambda c: f"=({oh(c)}+{B['debt']})/(1-{B['p_cogs']}-{B['p_ops']})")
 grow('Overhead', 'Fixed $ (new hires from Sep)', lambda c: '=' + oh(c))
-grow('Project costs', '40.15% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_cogs']}")
-grow('Operations', '2.13% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_ops']}")
-grow('Debt', 'Fixed $', lambda c: f"={B['debt']}")
+grow('Project costs', '40% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_cogs']}")
+grow('Operations', '2% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_ops']}")
+grow('Debt', '1% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_debt']}")
+grow('Debt (fixed $)', 'Fixed $10,000/month', lambda c: f"={B['debt']}")
 grow('Taxes', 'Fixed $', lambda c: f"={B['tax_m']}")
-grow('Reinvested', '1.82% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_reinv']}")
-grow('Owner pay', '13.56% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_owner']}")
+grow('Reinvested', '1.8% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_reinv']}")
+grow('Owner pay', '13.5% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_owner']}")
 grow('Leakage', 'Target $0', lambda c: f"={B['leak']}")
 grow('Cash kept', '2.87% of cash', lambda c: f"={c}{Y['Cash collected']}*{B['p_kept']}")
 # YTD compare columns on ACTUAL rows
@@ -253,9 +258,9 @@ wsM['B10'].comment = Comment('Balance Sheet: total bank accounts Aug $410,350.46
 wsM['B11'].comment = Comment('Balance Sheet: credit cards Aug $165,187.03 → Sep $75,517.31', 'Financial Reviewer')
 put(wsM, 13, 1, 'ROOTS scorecard: budget vs. actual', f_h)
 header(wsM, 14, ['ROOTS', 'Line', 'Rule', 'Allowed / goal', 'Actual', 'Over / (under)', '% of cash collected', 'Status'])
-sc = [('R', 'Cash collected', 'Goal'), ('O', 'Overhead', 'Fixed $ (with new hires)'), ('O', 'Project costs', '40.15% of cash'),
-      ('O', 'Operations', '2.13% of cash'), ('O', 'Debt', 'Fixed $'), ('T', 'Taxes', 'Fixed $ (entity taxes paid)'),
-      ('S', 'Reinvested', '1.82% of cash'), ('S', 'Owner pay', '13.56% of cash'), ('S', 'Leakage', 'Target $0'), ('S', 'Cash kept', '2.87% of cash')]
+sc = [('R', 'Cash collected', 'Goal'), ('O', 'Overhead', 'Fixed $ (with new hires)'), ('O', 'Project costs', '40% of cash'),
+      ('O', 'Operations', '2% of cash'), ('O', 'Debt', '1% of cash'), ('T', 'Taxes', 'Fixed $ (entity taxes paid)'),
+      ('S', 'Reinvested', '1.8% of cash'), ('S', 'Owner pay', '13.5% of cash'), ('S', 'Leakage', 'Target $0'), ('S', 'Cash kept', '2.87% of cash')]
 for i, (rt, lab, rule) in enumerate(sc):
     rr = 15 + i
     put(wsM, rr, 1, rt, f_bb); put(wsM, rr, 2, lab); put(wsM, rr, 3, rule, f_sub)
@@ -292,15 +297,119 @@ for cc in (2, 4, 6, 8, 9):
 put(wsM, 34, 1, 'What worked · What didn\'t', f_h)
 ww = ['Worked: overhead stayed under budget, even with the 2 new hires.',
       'Worked: credit cards were paid down by $89,670.',
-      'Didn\'t work: owner pay ran over 13.56% of cash collected.',
+      'Didn\'t work: owner pay ran over 13.5% of cash collected.',
       'Didn\'t work: 8 jobs had costs but no invoice (see Job Profit tab).']
 for i, t in enumerate(ww): put(wsM, 35 + i, 1, t)
 put(wsM, 40, 1, 'Your 3 decisions for October', f_h)
 dec = ['1. Collect the $112,346 that is 31–90 days late, starting with Erin Whitely ($52,700, 61–90 days), before October 15.',
        '2. Bill the 8 jobs with costs but no invoice, starting with 700 Riven Rock Dr ($6,759).',
-       '3. Set October owner pay at 13.56% of cash collected. Hold reinvestment to 1.82% and operations to 2.13%.']
+       '3. Set October owner pay at 13.5% of cash collected. Hold reinvestment to 1.8%, operations to 2%, and debt to 1%.']
 for i, t in enumerate(dec): put(wsM, 41 + i, 1, t, f_bb)
 widths(wsM, {'A': 30, 'B': 16, 'C': 24, 'D': 16, 'E': 16, 'F': 16, 'G': 16, 'H': 16, 'I': 14})
+
+# =====================================================================
+# YTD SNAPSHOT: goal vs actual + where the profit went + tax vs cash
+title(wsS, f'{CLIENT}: YTD Snapshot (Jan – Sep 2026)', 'Goal vs. actual for every ROOTS line, where the profit is sitting, and how much of the taxable profit is actually cash.')
+put(wsS, 4, 1, 'A. Goal vs. actual (YTD)', f_h)
+header(wsS, 5, ['Line', 'Rule', 'YTD goal / allowed', 'YTD actual', 'Over / (under)', '% of cash collected', 'Status'])
+snap = [('Revenue: cash collected', 'Cash collected', 'Cash collected', 'Goal $728,348/month'),
+        ('Overhead', 'Overhead', 'Overhead', 'Fixed $ (new hires from Sep)'),
+        ('Project costs', 'Project costs', 'Project costs', '40% of cash collected'),
+        ('Operations', 'Operations', 'Operations', '2% of cash collected'),
+        ('Debt', 'Debt', 'Debt', '1% of cash collected'),
+        ('Debt: fixed payments', 'Debt (fixed $)', 'Debt', 'Fixed $10,000/month'),
+        ('Reinvested / discretionary', 'Reinvested', 'Reinvested', '1.8% of cash collected'),
+        ('Owner pay', 'Owner pay', 'Owner pay', '13.5% of cash collected'),
+        ('Taxes paid (entity)', 'Taxes', 'Taxes', 'Fixed $'),
+        ('Leakage', 'Leakage', 'Leakage', 'Target $0')]
+for i, (lab, g, a, rule) in enumerate(snap):
+    rr = 6 + i
+    put(wsS, rr, 1, lab, f_bb if i == 0 else f_b); put(wsS, rr, 2, rule, f_sub)
+    put(wsS, rr, 3, f"='YTD Summary'!L{GA[g]}", f_link, CUR); put(wsS, rr, 4, f"='YTD Summary'!L{Y[a]}", f_link, CUR)
+    put(wsS, rr, 5, f'=D{rr}-C{rr}', f_bb, CUR); put(wsS, rr, 6, f'=IF($D$6=0,"",D{rr}/$D$6)', f_b, PCT)
+    put(wsS, rr, 7, f'=IF(E{rr}>=0,"On goal","Short")' if i == 0 else f'=IF(E{rr}>0,"Over","Under")', f_bb)
+status_colors(wsS, 'G6:G15')
+put(wsS, 16, 1, 'Profit after all of the above (cash kept)', f_bb, fill=fill_band)
+put(wsS, 16, 4, f"='YTD Summary'!L{Y['Cash kept']}", f_link, CUR, fill_band); put(wsS, 16, 6, '=IF($D$6=0,"",D16/$D$6)', f_b, PCT, fill_band)
+put(wsS, 17, 1, 'January cash collected = billed until the Dec 31, 2025 balance sheet is added (Data tab, A/R change).', f_sub)
+
+# ---- B. Where the profit went (balance sheet bridge)
+put(wsS, 19, 1, 'B. Where the profit went: balance sheet bridge', f_h)
+put(wsS, 20, 1, 'Start balance sheet date', f_bb); put(wsS, 20, 2, 'Jan 31, 2026', f_in, fill=fill_in)
+put(wsS, 20, 3, 'Change to "Dec 31, 2025" and type the Dec 31 balances in column C to make this a full Jan 1 – Sep 30 bridge.', f_sub)
+header(wsS, 21, ['Balance sheet line', 'Bucket', 'Start balance', 'Sep 30, 2026', 'Change', 'Effect on cash', 'What it means for cash', 'What it means for taxes'])
+BS = [  # label, bucket, start(Jan31), sep30, sign: +1 asset (increase uses cash), -1 liability/equity (increase gives cash)
+ ('Bank accounts (excl. petty cash)', 'Cash available', 136822.22, 170607.66, 0, 'Spendable today.', 'Already taxed as profit.'),
+ ('Petty cash', 'Cash available', 25620.00, 26220.00, 0, 'REVIEW: $26,220 is high for petty cash. Confirm it exists.', 'Already taxed as profit.'),
+ ('Escrow (Glen Oaks)', 'Parked: not spendable yet', 0, 288139.71, 1, 'Locked until escrow releases it.', 'Taxed when earned. No deduction for parking it.'),
+ ('Undeposited Funds', 'Parked: not spendable yet', 0, 119830.00, 1, 'REVIEW: sitting since May. May not be real cash.', 'If duplicated, profit is overstated.'),
+ ('Accounts Receivable', 'Waiting on customers', 54713.20, 237693.50, 1, 'Billed, not collected yet.', 'Accrual: taxed. Cash basis: not taxed until collected.'),
+ ('State Tax Receivable', 'One-time cash in', 44136.00, 0, 1, 'Refund came in (Aug). Not profit.', 'Not part of operating profit.'),
+ ('Fixed + other assets', 'No change', 143338.26, 143338.26, 1, 'No 2026 purchases recorded.', 'No 2026 depreciation booked: a missed deduction (2025 was $281,321).'),
+ ('Accounts Payable', 'Paid down bills', 243989.29, 142724.14, -1, 'Paid $101K of older vendor bills.', 'Accrual: already deducted when billed. Cash basis: deducted when paid.'),
+ ('Credit cards', 'Paid down debt', 132767.15, 75517.31, -1, 'Paid the cards down.', 'Expenses were deducted when charged. Paying the card adds no deduction.'),
+ ('Vehicle + equipment loans', 'Paid down debt', 264850.12, 204279.06, -1, 'Loan principal paid.', 'Principal is NOT deductible. Only interest and depreciation are.'),
+ ('Due to DMCS', 'Advanced to related companies', 160.00, -14887.00, -1, 'JVP sent DMCS more than owed. DMCS now owes JVP.', 'Not deductible. It is a loan to DMCS.'),
+ ('Due to Johnston Landscape', 'Advanced to related companies', 0, -2970.00, -1, 'JVP paid JL\'s 401K ($495/month).', 'Not deductible to JVP. JL owes it back.'),
+ ('Payroll liabilities', 'Owed, not paid yet', 18212.92, 72915.61, -1, 'Unpaid payroll taxes and wages. Cash still has to go out.', 'Already deducted. The cash is owed.'),
+ ('Owner draws', 'Paid to owners', 4077.27, 46399.73, 1, 'Cash taken by owners.', 'Not deductible. Owners are taxed on the K-1 profit instead.'),
+]
+r = 22; FIRST = r
+for lab, bucket, st, sep, sign, cash_m, tax_m in BS:
+    put(wsS, r, 1, lab); put(wsS, r, 2, bucket, f_bb); put(wsS, r, 3, st, f_in, CUR, fill_in); put(wsS, r, 4, sep, f_in, CUR)
+    put(wsS, r, 5, f'=D{r}-C{r}', f_b, CUR)
+    put(wsS, r, 6, '' if sign == 0 else f'={-sign}*E{r}', f_bb, CUR)
+    put(wsS, r, 7, cash_m, f_b, al=wrap); put(wsS, r, 8, tax_m, f_b, al=wrap); wsS.row_dimensions[r].height = 26
+    r += 1
+LASTBS = r - 1
+r += 1
+put(wsS, r, 1, 'Net profit for the bridge period (accrual, QBO)', f_bb)
+put(wsS, r, 6, f'=Data!L{NI_ROW}-IF(B20="Dec 31, 2025",0,Data!C{NI_ROW})', f_link, CUR); NIP = r; r += 1
+put(wsS, r, 1, 'Starting cash (bank + petty cash)', f_bb); put(wsS, r, 6, f'=C{FIRST}+C{FIRST+1}', f_b, CUR); SC = r; r += 1
+put(wsS, r, 1, 'Ending cash per bridge (start + profit + effects above)', f_bb); put(wsS, r, 6, f'=F{SC}+F{NIP}+SUM(F{FIRST+2}:F{LASTBS})', f_bb, CUR); EB = r; r += 1
+put(wsS, r, 1, 'Actual cash on Sep 30 (bank + petty cash)', f_bb); put(wsS, r, 6, f'=D{FIRST}+D{FIRST+1}', f_b, CUR); AC = r; r += 1
+put(wsS, r, 1, 'Check (must be 0)', f_bb, fill=fill_band); put(wsS, r, 6, f'=F{EB}-F{AC}', f_bb, CUR, fill_band); r += 2
+
+# ---- where each dollar of profit went (summary by bucket)
+put(wsS, r, 1, 'Where each $1 of profit went (bridge period)', f_h); r += 1
+header(wsS, r, ['Bucket', '', 'Amount', '% of profit']); r += 1
+buckets = ['Parked: not spendable yet', 'Waiting on customers', 'Paid down bills', 'Paid down debt', 'Paid to owners', 'Advanced to related companies', 'Owed, not paid yet', 'One-time cash in']
+BK0 = r
+put(wsS, r, 1, 'Added to cash available', f_bb); put(wsS, r, 3, f'=SUM(D{FIRST}:D{FIRST+1})-F{SC}', f_b, CUR); put(wsS, r, 4, f'=IF(F{NIP}=0,"",C{r}/F{NIP})', f_b, PCT); r += 1
+for b in buckets:
+    put(wsS, r, 1, b, f_bb); put(wsS, r, 3, f'=-SUMIFS(F{FIRST}:F{LASTBS},B{FIRST}:B{LASTBS},A{r})', f_b, CUR)
+    put(wsS, r, 4, f'=IF(F{NIP}=0,"",C{r}/F{NIP})', f_b, PCT); r += 1
+put(wsS, r, 1, 'Total (equals profit)', f_bb, fill=fill_band); put(wsS, r, 3, f'=SUM(C{BK0}:C{r-1})', f_bb, CUR, fill_band); put(wsS, r, 4, f'=IF(F{NIP}=0,"",C{r}/F{NIP})', f_bb, PCT, fill_band); r += 1
+put(wsS, r, 1, 'Negative amounts = cash that came IN from that bucket (e.g. unpaid payroll liabilities, state tax refund).', f_sub); r += 2
+
+# ---- C. Taxable profit vs cash available
+put(wsS, r, 1, 'C. Taxable profit vs. cash available', f_h); r += 1
+header(wsS, r, ['Line', 'Basis', 'Amount', 'Note']); r += 1
+T0 = r
+rows_t = [
+ ('Taxable profit YTD (cash basis, QBO)', 'Input', f"={B['cash_ni']}", 'From Ayrica. JVP\'s return is taxed on this.'),
+ ('Accrual profit YTD (QBO)', 'Data', f'=Data!L{NI_ROW}', 'Difference is mostly customer balances and bills not yet paid.'),
+ ('Cash available today (bank, excl. petty cash)', 'Balance sheet', f'=D{FIRST}', 'Spendable now.'),
+ ('Parked (escrow + undeposited)', 'Balance sheet', f'=D{FIRST+2}+D{FIRST+3}', 'Not spendable until released or deposited.'),
+ ('JVP company tax (CA 1.5% of cash-basis profit)', 'Estimate', f"=C{T0}*{B['ca_corp']}", 'Paid by JVP.'),
+]
+for lab, basis, f, note in rows_t:
+    put(wsS, r, 1, lab, f_bb); put(wsS, r, 2, basis, f_sub); put(wsS, r, 3, f, f_b, CUR); put(wsS, r, 4, note, f_sub); r += 1
+mf = f"{B['months']}/12"
+for who, own in [('Johnston', 'own_j'), ('Vidal', 'own_v')]:
+    ann = f"(C{T0}*{B[own]}*(1-{B['ca_corp']})*12/{B['months']})"
+    fed = f"SUMPRODUCT((MAX(0,{ann}-{B['fed_std']})>{fed_lo})*(MAX(0,{ann}-{B['fed_std']})-{fed_lo})*{fed_step})*{mf}"
+    ca = f"SUMPRODUCT((MAX(0,{ann}-{B['ca_std']})>{ca_lo})*(MAX(0,{ann}-{B['ca_std']})-{ca_lo})*{ca_step})*{mf}"
+    put(wsS, r, 1, f'{who}: tax on K-1 share of JVP profit (YTD)', f_bb); put(wsS, r, 2, 'Estimate', f_sub)
+    put(wsS, r, 3, f'={fed}+{ca}', f_b, CUR); put(wsS, r, 4, 'Federal + CA, single filer, this income only. Higher if stacked with DMCS/JL income. Ownership % on Budget tab.', f_sub); r += 1
+put(wsS, r, 1, 'Total tax on JVP profit (YTD)', f_bb, fill=fill_band); put(wsS, r, 3, f'=SUM(C{T0+4}:C{r-1})', f_bb, CUR, fill_band); TT = r; r += 1
+put(wsS, r, 1, 'Cash available after setting aside that tax', f_bb, fill=fill_band); put(wsS, r, 3, f'=C{T0+2}-C{TT}', f_bb, CUR, fill_band); CAT = r; r += 1
+put(wsS, r, 1, '% of taxable profit that is cash available today', f_bb); put(wsS, r, 3, f'=IF(C{T0}=0,"",C{T0+2}/C{T0})', f_bb, PCT); r += 1
+put(wsS, r, 1, 'Status', f_bb); put(wsS, r, 3, f'=IF(C{CAT}<0,"Short: cash does not cover the tax on profit","Covered")', f_bb); status_colors(wsS, f'C{r}:C{r}'); r += 2
+put(wsS, r, 1, 'Not included: tax on DMCS and Johnston Landscapes payouts (see Monthly Summary). That is paid from those payouts, not from JVP cash.', f_sub); r += 1
+put(wsS, r, 1, 'Ways to lower the tax on profit that isn\'t cash: book 2026 depreciation on the trucks and equipment, and split loan interest out of principal (both are End of Year corrections).', f_sub)
+widths(wsS, {'A': 44, 'B': 28, 'C': 16, 'D': 16, 'E': 14, 'F': 15, 'G': 46, 'H': 50})
+wsS.freeze_panes = 'A6'
 
 # =====================================================================
 # QUARTERLY SUMMARY (Q3)
@@ -341,7 +450,7 @@ for i, t in enumerate(['1. Spend the full marketing budget ($5,122 a month) and 
                        '3. Follow up on every open proposal older than 14 days.']):
     put(wsQ, 25 + i, 1, t, f_bb)
 put(wsQ, 29, 1, 'What we track each month', f_h)
-for i, t in enumerate(['Cash collected vs. goal and breakeven', 'Owner pay, reinvested, operations as % of cash collected',
+for i, t in enumerate(['Cash collected vs. goal and breakeven', 'Owner pay 13.5%, reinvested 1.8%, operations 2%, debt 1% of cash collected',
                        'New leads and jobs won (need from client)', 'Project costs per $1 collected (40¢ or less)', 'Jobs that lost money (target 0)']):
     put(wsQ, 30 + i, 1, t)
 widths(wsQ, {'A': 22, 'B': 20, 'C': 18, 'D': 18, 'E': 24, 'F': 16})
@@ -551,7 +660,7 @@ title(wsN, 'Internal notes for Ayrica (not client-facing)', f'{CLIENT} · {PERIO
 NOTES = ['Correction: the A/R I previously called "31–60 days late" ($103,844) is actually 61–90 days. 31–60 is $23,686. Decision #1 now uses $112,346 (31–90 days, excluding DMCS).',
          'Constraint: Leads (costs on or under budget for Q3; cash collected about 74% of goal). Money Leakage is second.',
          'New hires: team payroll ran $10,478 a month over the 2025 budget in September. It\'s added to overhead from month 9 (Budget tab). Confirm the hires.',
-         'Flex rule: owner pay 13.56%, reinvested 1.82%, operations 2.13% of cash collected. September owner pay ran well over its allowance.',
+         'Flex rule (per Ayrica 10/08): project costs 40%, operations 2%, debt 1%, reinvested 1.8%, owner pay 13.5% of cash collected. Overhead fixed. The fixed $10,000/month debt is still tracked.',
          'Tax: the YTD set-aside treats DMCS and Johnston Landscapes payouts each as one single filer\'s pass-through income. 2026 federal brackets, 2025 CA brackets, no QBI deduction. Confirm the entity type and any estimates paid.',
          'Reasonable comp: owner W-2 wages are $47,500 YTD, while $538,000 went through DMCS and JLI.',
          'Job-to-customer matching: done by matching invoice amounts (job billing plus the 3% surcharge). 2305 Kenilworth and 975 Cliff Dr are marked "confirm".',

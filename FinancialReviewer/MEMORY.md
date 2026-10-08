@@ -79,6 +79,10 @@ NOT mine (for now): designing service tiers or workflows.
 - **Taxes section = YTD set-aside table:** CA 1.5% of the company's net profit, plus each related-entity payout (e.g. DMCS, Johnston Landscapes) as pass-through income taxed as a single filer (federal + CA), annualized then shown YTD.
 - **Job Profit Report is a standard deliverable** (Business Management): every job ranked, jobs with costs but no invoice, jobs billed below cost, and jobs under the target margin.
 
+## ROOTS % rules (updated by Ayrica 2026-10-08)
+- Overhead fixed $. Project costs **40%**, Operations **2%**, Debt **1%** of cash collected (also track the fixed $10,000/month), Reinvested/discretionary **1.8%**, Owner pay **13.5%**.
+- Every review includes a **YTD Snapshot**: (A) goal vs actual for each line, (B) a balance-sheet bridge showing where the profit went (cash, parked, A/R, bills/debt paid, owner draws, related-party advances, unpaid liabilities), and (C) taxable profit (cash basis) vs cash available, including owner-level tax on the K-1 share.
+
 ## Compliance corrections format
 - Bullet list, copy-paste ready for the bookkeeping team.
 - Name the exact issue per line, e.g. missing vendor name, missing customer name, miscategorized transaction, uncleared transaction, balance sheet account off.
@@ -107,6 +111,7 @@ NOT mine (for now): designing service tiers or workflows.
 - **Budget (JVP_ROOTS_Budget_2025.xlsx, cash basis; 2025 actuals used as 2026 targets):** cash collected $728,348/mo · breakeven $494,945/mo (overhead + debt only) · Overhead fixed $275,702/mo (37.85%; includes ALL crew labor) · Project costs (COGS excl. crew labor) 40.15% of cash collected · Operations (fuel, truck repairs, legal) 2.13% · Debt $10,000/mo · Entity taxes $2,577/mo · Reinvested (marketing, travel, meals, brand) $13,241/mo · Owner pay (wages + DMCS + Johnston Landscapes) $98,752/mo · Cash kept target $20,887/mo (2.87%) · Leakage (penalties, bad debt, fraud) target $0.
 - 2 new hires (per Ayrica, Sept 2026): team payroll +$10,478/mo vs 2025 budget, so overhead budget is $286,180 and breakeven is $513,132. Confirm names, start dates, and pay.
 - Sept 2026 vs budget: cash collected 53% of budget, $105,861 under breakeven · overhead $262,208 (on budget) · project costs 44¢ per $1 (over) · ops 3.5¢ (over) · reinvested $19,083 (travel $6,339 vs $2,833) · owner pay $95,483 (on budget) · cash kept −$177,550.
+- JVP cash-basis net profit YTD Sep 2026: $649,907.85 (from Ayrica). Bridge Jan 31 → Sep 30: $806K profit went to escrow + undeposited ($408K), A/R ($183K), debt paydown ($118K: cards + loans), A/P paydown ($101K), owner draws ($42K), related-party advances ($18K). Sources: unpaid payroll liabilities (+$55K) and state tax refund (+$44K). Cash available ($170.6K) does not cover estimated tax on JVP profit (~$242K incl. 1.5%). Ownership assumed 50/50, to confirm.
 - Q3 2026 constraint: **Leads** (revised after budget: costs on or under budget, cash collected 74% of budget, billing −18% vs Q2, marketing 58% of budget). Money Leakage is second. Confirm with lead count and win rate. Q4 target: cash collected above $600K/mo by December.
 - A/R aging 9/30: 1–30 $240,373 · 31–60 $23,686 · **61–90 $103,844** (incl. DMCS $15,184; Erin Whitely $52,700) · 91+ −$130,209 (D.W. Johnston credit). I earlier mislabeled the $103,844 as 31–60 and corrected it.
 - **Open REVIEW items (carry forward until fixed):** Undeposited Funds $119,830 (since May) · BOA-4089 −$1,755.30 · unapplied $26,557.12 deposit (Inv 3789/3906/3866) · D.W. Johnston −$139,430 A/R credit · missing Sept loan payments (Rivian, Tahoe, Transit) · payroll liabilities not paid down · petty cash $26,220 · escrow $288,140 · DMCS and Johnston Landscape related-party balances.
